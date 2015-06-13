@@ -5,7 +5,7 @@
  */
 package physics;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 // TODO: ADD A STATIC VARIABLE TO KEEP TRACK OF WHICH POINT IS COLLIDING
 
@@ -17,14 +17,14 @@ import java.util.Vector;
  */
 public class CollisionAnalyzer 
 {
-    private static Vector<ParallelepipedModel> worldObjects;
+    private static ArrayList<ParallelepipedModel> worldObjects;
     private static BallModel ball;
     private static ParallelepipedModel nearParallelepiped;
     private static ParallelepipedModel farParallelepiped;
     
     public CollisionAnalyzer()
     {
-        worldObjects = new Vector<>();
+        worldObjects = new ArrayList<>();
     }
     
     public static void addObject(BallModel object)

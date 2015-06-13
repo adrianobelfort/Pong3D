@@ -64,4 +64,6 @@ public abstract class CollideableObject
         zmax = zcenter + (pzmax - pzmin)/2.0f;
         zmin = zcenter - (pzmax - pzmin)/2.0f;
     }
+    
+    public abstract boolean move(float xIncrement, float zIncrement);
 }

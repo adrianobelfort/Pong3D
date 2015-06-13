@@ -16,4 +16,16 @@ public class ParallelepipedModel extends CollideableObject
         super(xmin, xmax, zmin, zmax);
         CollisionAnalyzer.addObject(this);
     }
+    
+    @Override
+    public boolean move(float xIncrement, float zIncrement)
+    {
+        if (!CollisionAnalyzer.analyzeCollision(this, xIncrement, zIncrement) &&
+            !CollisionAnalyzer.analyzeCollisionWithBall(this, xIncrement, zIncrement))
+        {
+            this.updatePosition(xIncrement, zIncrement);
+            return true;
+        }
+        return false;
+    }
 }

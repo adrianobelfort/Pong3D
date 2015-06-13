@@ -25,12 +25,16 @@ import br.usp.icmc.vicg.gl.util.ShaderFactory.ShaderType;
 
 import com.jogamp.opengl.util.AnimatorBase;
 import com.jogamp.opengl.util.FPSAnimator;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Timer;
 import physics.*;
 
 public class NewForms extends KeyAdapter implements GLEventListener {
@@ -50,6 +54,9 @@ public class NewForms extends KeyAdapter implements GLEventListener {
     private float rotationParameterZ;
     
     private final float step;
+    private int timeDelay;
+    private static Timer timer;
+    private Updater updater;
     
     private final BallModel ballModel;
     private final ParallelepipedModel leftParallelepipedModel;
@@ -72,6 +79,8 @@ public class NewForms extends KeyAdapter implements GLEventListener {
     private float cameraHeight;
     
     private final float[] viewUpVector;
+    
+    private AnimatorBase animator;
     
     CollisionAnalyzer analyzer;
     
@@ -99,6 +108,11 @@ public class NewForms extends KeyAdapter implements GLEventListener {
         leftParallelepiped = new Parallelepiped();
         rightParallelepiped = new Parallelepiped();
         
+        step = 0.2f;
+        timeDelay = 20;
+        updater = new Updater();
+        timer = new Timer(timeDelay, updater);
+        
         nearParallelepipedDisplacement = 0.0f;
         farParallelepipedDisplacement = 0.0f;
         rotationParameterY = 0.0f;
@@ -111,14 +125,10 @@ public class NewForms extends KeyAdapter implements GLEventListener {
         ballDisplacementX = 0.0f;
         ballDisplacementZ = 0.0f;
         
-        step = 0.25f;
-        
         cameraDistance = 35.0f;
         cameraHeight = 31.0f;
         
-        viewUpVector = new float[3];
-        viewUpVector[0] = viewUpVector[2] = 0;
-        viewUpVector[1] = 1.0f;
+        viewUpVector = new float[]{0.0f, 1.0f, 0.0f};
         
         light = new Light();
         material = new Material();
@@ -126,17 +136,11 @@ public class NewForms extends KeyAdapter implements GLEventListener {
         
         analyzer = new CollisionAnalyzer();
         
-        ballModel = new BallModel(-0.5f, 0.5f, -0.5f, 0.5f, 0.5f);
+        ballModel = new BallModel(-0.5f, 0.5f, -0.5f, 0.5f, 0.5f, (float) Math.random(), (float) Math.random());
         leftParallelepipedModel = new ParallelepipedModel(-0.5f - distanceFromCenter, 0.5f - distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale);
         rightParallelepipedModel = new ParallelepipedModel(-0.5f + distanceFromCenter, 0.5f + distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale);
         nearParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, zDistance - 0.5f, zDistance + 0.5f);
         farParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, -(zDistance + 0.5f), -(zDistance - 0.5f));
-        
-        /*CollisionAnalyzer.addObject(ballModel);
-        CollisionAnalyzer.addObject(leftParallelepipedModel);
-        CollisionAnalyzer.addObject(rightParallelepipedModel);
-        CollisionAnalyzer.addObject(nearParallelepipedModel);
-        CollisionAnalyzer.addObject(farParallelepipedModel);*/
     }
 
     @Override
@@ -147,7 +151,7 @@ public class NewForms extends KeyAdapter implements GLEventListener {
         // Print OpenGL version
         System.out.println("OpenGL Version: " + gl.glGetString(GL.GL_VERSION) + "\n");
 
-        gl.glClearColor(1, 1, 1, 0);
+        gl.glClearColor(0.8f, 0.8f, 1, 0);
         gl.glClearDepth(1.0f);
 
         gl.glEnable(GL.GL_DEPTH_TEST);
@@ -259,6 +263,11 @@ public class NewForms extends KeyAdapter implements GLEventListener {
         rightParallelepiped.bind();
         rightParallelepiped.draw();
         
+        ballDisplacementX = ballModel.getX();
+        ballDisplacementZ = ballModel.getZ();
+        rotationParameterX = -1.0f * ballModel.rotationAngleAroundZ();
+        rotationParameterZ = -1.0f * ballModel.rotationAngleAroundX();
+        
         modelMatrix.loadIdentity();
         modelMatrix.translate(ballDisplacementX, 0, ballDisplacementZ);
         modelMatrix.rotate(rotationParameterY, 0, 1.0f, 0);
@@ -276,190 +285,223 @@ public class NewForms extends KeyAdapter implements GLEventListener {
     @Override
     public void keyPressed(KeyEvent e)
     {
-        switch(e.getKeyCode())
+        if(animator.isAnimating())
         {
-            case KeyEvent.VK_LEFT: // Moves to the left
-                //if (nearParallelepipedDisplacement > -8.0)
-                //    nearParallelepipedDisplacement -= 0.5;
-                if (!CollisionAnalyzer.analyzeCollision(nearParallelepipedModel, -step, 0.0f) &&
-                    !CollisionAnalyzer.analyzeCollisionWithBall(nearParallelepipedModel, -step, 0.0f))
-                {
-                    nearParallelepipedModel.updatePosition(-step, 0.0f);
-                }
-            break;
-                
-            case KeyEvent.VK_RIGHT: // Moves to the right
-                //if (nearParallelepipedDisplacement < 8.0)
-                //    nearParallelepipedDisplacement += 0.5;
-                if (!CollisionAnalyzer.analyzeCollision(nearParallelepipedModel, step, 0.0f) &&
-                    !CollisionAnalyzer.analyzeCollisionWithBall(nearParallelepipedModel, step, 0.0f))
-                {
-                    nearParallelepipedModel.updatePosition(step, 0.0f);
-                }
-            break;
-                
-            case KeyEvent.VK_A: // Moves the second object to the left
-//                if (farParallelepipedDisplacement > -8.0)
-//                    farParallelepipedDisplacement -= 0.5;
-                if (!CollisionAnalyzer.analyzeCollision(farParallelepipedModel, -step, 0.0f) &&
-                    !CollisionAnalyzer.analyzeCollisionWithBall(farParallelepipedModel, -step, 0.0f))
-                {
-                    farParallelepipedModel.updatePosition(-step, 0.0f);
-                }
-            break;
-                
-            case KeyEvent.VK_D: // Moves the second object to the right
-//                if (farParallelepipedDisplacement < 8.0)
-//                    farParallelepipedDisplacement += 0.5;
-                if (!CollisionAnalyzer.analyzeCollision(farParallelepipedModel, step, 0.0f) &&
-                    !CollisionAnalyzer.analyzeCollisionWithBall(farParallelepipedModel, step, 0.0f))
-                {
-                    farParallelepipedModel.updatePosition(step, 0.0f);
-                }
-            break;
-                
-            case KeyEvent.VK_NUMPAD4:
-                //ballDisplacementX -= step;
-                if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, 0.0f))
-                {
-                    ballModel.updatePosition(-step, 0.0f);
-                }
-            break;
-                
-            case KeyEvent.VK_NUMPAD6:
-                //ballDisplacementX += step;
-                if(!CollisionAnalyzer.analyzeCollision(ballModel, step, 0.0f))
-                {
-                    ballModel.updatePosition(step, 0.0f);
-                }
-            break;
-                
-            case KeyEvent.VK_NUMPAD2:
-                //ballDisplacementZ += step;
-                if(!CollisionAnalyzer.analyzeCollision(ballModel, 0.0f, step))
-                {
-                    ballModel.updatePosition(0.0f, step);
-                }
-            break;
-                
-            case KeyEvent.VK_NUMPAD8:
-                //ballDisplacementZ -= step;
-                if(!CollisionAnalyzer.analyzeCollision(ballModel, 0.0f, -step))
-                {
-                    ballModel.updatePosition(0.0f, -step);
-                }
-            break;
-                
-            case KeyEvent.VK_NUMPAD1:
-//                ballDisplacementX -= step;
-//                ballDisplacementZ += step;
-                if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, step))
-                {
-                    ballModel.updatePosition(-step, step);
-                }
-            break;
-                
-            case KeyEvent.VK_NUMPAD3:
-//                ballDisplacementX += step;
-//                ballDisplacementZ += step;
-                if(!CollisionAnalyzer.analyzeCollision(ballModel, step, step))
-                {
-                    ballModel.updatePosition(step, step);
-                }
-            break;
-                
-            case KeyEvent.VK_NUMPAD7:
-//                ballDisplacementX -= step;
-//                ballDisplacementZ -= step;
-                if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, -step))
-                {
-                    ballModel.updatePosition(-step, -step);
-                }
-            break;
-                
-            case KeyEvent.VK_NUMPAD9:
-//                ballDisplacementX += step;
-//                ballDisplacementZ -= step;
-                if(!CollisionAnalyzer.analyzeCollision(ballModel, step, -step))
-                {
-                    ballModel.updatePosition(step, -step);
-                }
-            break;
-                
-            case KeyEvent.VK_F: // Moves to the left
-                rotationParameterY -= step;
-            break;
-                
-            case KeyEvent.VK_J: // Moves to the right
-                rotationParameterY += step;
-            break;
-                
-            case KeyEvent.VK_Y:
-                distanceFromCenter += 2.0f * step;
-            break;
-                
-            case KeyEvent.VK_H:
-                distanceFromCenter -= 2.0f * step;
-            break;
-                
-            case KeyEvent.VK_T:
-                parallelepipedLengthScale += step;
-            break;
-                
-            case KeyEvent.VK_G:
-                parallelepipedLengthScale -= step;
-            break;
-                
-            case KeyEvent.VK_B:
-                zDistance -= step;
-            break;
-                
-            case KeyEvent.VK_N:
-                zDistance += step;
-            break;
-                
-            case KeyEvent.VK_X:
-                if (cameraDistance <= 2.0f * step)
-                {
+            switch(e.getKeyCode())
+            {
+                case KeyEvent.VK_LEFT: // Moves to the left
+                    if (!CollisionAnalyzer.analyzeCollision(nearParallelepipedModel, -step, 0.0f) &&
+                        !CollisionAnalyzer.analyzeCollisionWithBall(nearParallelepipedModel, -step, 0.0f))
+                    {
+                        nearParallelepipedModel.updatePosition(-step, 0.0f);
+                    }
+                break;
+
+                case KeyEvent.VK_RIGHT: // Moves to the right
+                    if (!CollisionAnalyzer.analyzeCollision(nearParallelepipedModel, step, 0.0f) &&
+                        !CollisionAnalyzer.analyzeCollisionWithBall(nearParallelepipedModel, step, 0.0f))
+                    {
+                        nearParallelepipedModel.updatePosition(step, 0.0f);
+                    }
+                break;
+
+                case KeyEvent.VK_A: // Moves the second object to the left
+                    if (!CollisionAnalyzer.analyzeCollision(farParallelepipedModel, -step, 0.0f) &&
+                        !CollisionAnalyzer.analyzeCollisionWithBall(farParallelepipedModel, -step, 0.0f))
+                    {
+                        farParallelepipedModel.updatePosition(-step, 0.0f);
+                    }
+                break;
+
+                case KeyEvent.VK_D: // Moves the second object to the right
+                    if (!CollisionAnalyzer.analyzeCollision(farParallelepipedModel, step, 0.0f) &&
+                        !CollisionAnalyzer.analyzeCollisionWithBall(farParallelepipedModel, step, 0.0f))
+                    {
+                        farParallelepipedModel.updatePosition(step, 0.0f);
+                    }
+                break;
+
+                case KeyEvent.VK_NUMPAD4:
+                    if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, 0.0f))
+                    {
+                        ballModel.updatePosition(-step, 0.0f);
+                    }
+                break;
+
+                case KeyEvent.VK_NUMPAD6:
+                    if(!CollisionAnalyzer.analyzeCollision(ballModel, step, 0.0f))
+                    {
+                        ballModel.updatePosition(step, 0.0f);
+                    }
+                break;
+
+                case KeyEvent.VK_NUMPAD2:
+                    if(!CollisionAnalyzer.analyzeCollision(ballModel, 0.0f, step))
+                    {
+                        ballModel.updatePosition(0.0f, step);
+                    }
+                break;
+
+                case KeyEvent.VK_NUMPAD8:
+                    if(!CollisionAnalyzer.analyzeCollision(ballModel, 0.0f, -step))
+                    {
+                        ballModel.updatePosition(0.0f, -step);
+                    }
+                break;
+
+                case KeyEvent.VK_NUMPAD1:
+                    if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, step))
+                    {
+                        ballModel.updatePosition(-step, step);
+                    }
+                break;
+
+                case KeyEvent.VK_NUMPAD3:
+                    if(!CollisionAnalyzer.analyzeCollision(ballModel, step, step))
+                    {
+                        ballModel.updatePosition(step, step);
+                    }
+                break;
+
+                case KeyEvent.VK_NUMPAD7:
+                    if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, -step))
+                    {
+                        ballModel.updatePosition(-step, -step);
+                    }
+                break;
+
+                case KeyEvent.VK_NUMPAD9:
+                    if(!CollisionAnalyzer.analyzeCollision(ballModel, step, -step))
+                    {
+                        ballModel.updatePosition(step, -step);
+                    }
+                break;
+
+                case KeyEvent.VK_F: // Moves to the left
+                    rotationParameterY -= step;
+                break;
+
+                case KeyEvent.VK_J: // Moves to the right
+                    rotationParameterY += step;
+                break;
+
+                case KeyEvent.VK_Y:
+                    distanceFromCenter += 2.0f * step;
+                break;
+
+                case KeyEvent.VK_H:
+                    distanceFromCenter -= 2.0f * step;
+                break;
+
+                case KeyEvent.VK_T:
+                    parallelepipedLengthScale += step;
+                break;
+
+                case KeyEvent.VK_G:
+                    parallelepipedLengthScale -= step;
+                break;
+
+                case KeyEvent.VK_B:
+                    zDistance -= step;
+                break;
+
+                case KeyEvent.VK_N:
+                    zDistance += step;
+                break;
+
+                case KeyEvent.VK_X:
+                    if (cameraDistance <= 2.0f * step)
+                    {
+                        cameraDistance = 0.1f;
+                    }
+                    else
+                    {
+                        cameraDistance -= 2.0f * step;
+                    }
+                break;
+
+                case KeyEvent.VK_C:
+                    if (cameraDistance < 2.0f * step)
+                    {
+                        cameraDistance = 2.0f * step;
+                    }
+                    else
+                    {
+                        cameraDistance += 2.0f * step;
+                    }
+                break;
+
+                case KeyEvent.VK_V:
+                    cameraHeight += 2.0f * step;
+                break;
+
+                case KeyEvent.VK_Z:
+                    cameraHeight -= 2.0f * step;
+                break;
+
+                case KeyEvent.VK_U:
+                    cameraHeight = 20.0f;
                     cameraDistance = 0.1f;
-                }
-                else
-                {
-                    cameraDistance -= 2.0f * step;
-                }
-            break;
-                
-            case KeyEvent.VK_C:
-                if (cameraDistance < 2.0f * step)
-                {
-                    cameraDistance = 2.0f * step;
-                }
-                else
-                {
-                    cameraDistance += 2.0f * step;
-                }
-            break;
-                
-            case KeyEvent.VK_V:
-                cameraHeight += 2.0f * step;
-            break;
-                
-            case KeyEvent.VK_Z:
-                cameraHeight -= 2.0f * step;
-            break;
-                
-            case KeyEvent.VK_U:
-                cameraHeight = 20.0f;
-                cameraDistance = 0.1f;
-            break;
+                break;
+                    
+                case KeyEvent.VK_R:
+                    ballModel.updateAbsolutePosition(0, 0);
+                    ballModel.setSpeed((float) Math.random(), (float) Math.random());
+            }
+            
+            nearParallelepipedDisplacement = nearParallelepipedModel.getX();
+            farParallelepipedDisplacement = farParallelepipedModel.getX();
         }
         
-        nearParallelepipedDisplacement = nearParallelepipedModel.getX();
-        farParallelepipedDisplacement = farParallelepipedModel.getX();
-        ballDisplacementX = ballModel.getX();
-        ballDisplacementZ = ballModel.getZ();
-        rotationParameterX = -ballModel.rotationAngleAroundZ();
-        rotationParameterZ = -ballModel.rotationAngleAroundX();
+        // Switch for pause game features
+        // This switch will be evaluated all the time, regardless of animation
+        switch(e.getKeyCode())
+        {
+            case KeyEvent.VK_1:
+                if (animator.isAnimating())
+                {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            animator.pause();
+                            timer.stop();
+                        }
+                    }).start();
+                }
+                else if (animator.isPaused())
+                {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            animator.resume();
+                            timer.start();
+                        }
+                    }).start();
+                }
+            break;
+                
+            case KeyEvent.VK_2:
+                if (timer.isRunning())
+                {
+                    timer.stop();
+                }
+                else
+                {
+                    timer.start();
+                }
+            break;
+                
+            case KeyEvent.VK_ESCAPE:
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        animator.stop();
+                        System.exit(0);
+                    }
+
+                }).start();
+            break;
+        }
         
         //printParameters();
     }
@@ -474,6 +516,11 @@ public class NewForms extends KeyAdapter implements GLEventListener {
         nearParallelepiped.dispose();
         farParallelepiped.dispose();
         ball.dispose();
+    }
+    
+    public void bindAnimator(AnimatorBase a)
+    {
+        animator = a;
     }
 
     public static void main(String[] args) {
@@ -492,11 +539,12 @@ public class NewForms extends KeyAdapter implements GLEventListener {
         NewForms listener = new NewForms();
         glCanvas.addGLEventListener(listener);
 
-        Frame frame = new Frame("Parallelepiped");
+        Frame frame = new Frame("Pong 3D (beta)");
         frame.setSize(1020, 1020);
         frame.add(glCanvas);
         frame.addKeyListener(listener);
         final AnimatorBase animator = new FPSAnimator(glCanvas, 60);
+        listener.bindAnimator(animator);
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -514,6 +562,25 @@ public class NewForms extends KeyAdapter implements GLEventListener {
         });
         frame.setVisible(true);
         animator.start();
+        timer.start();
     }
 
+    class Updater implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent ae) 
+        {
+            
+//            double dt = 0.05;
+//            spring.updatePositionAndVelocity(dt);
+//            springGame.setLocationY(spring.getLocationX());
+//            
+//            System.out.println( spring.getLocationX() );            
+//            springGame.update();
+            //nearParallelepipedDisplacement = nearParallelepipedModel.getX();
+            //farParallelepipedDisplacement = farParallelepipedModel.getX();
+            
+            ballModel.move(step);
+        }        
+    }
 }
