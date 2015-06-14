@@ -36,7 +36,7 @@ Communication between server and host
 	
 	When they choose to leave the lobby, the TCP connection is closed and the server deletes them from its list.
 	
-Communication host to host
+Host to host communication
 
 	When the hosts connect to the server, they enter a lobby of connected players and request the lobby info to it.
 	The host receives the list of connected players and their availabilities, picking one available player to connect.
@@ -54,4 +54,19 @@ Communication host to host
 		
 Game dynamics:
 	
-	
+	The player who started the game will have the choice to start the game. There must be a start button, and, upon click,
+	a message will be sent with the initial (vectorial) speed of the ball. The ball starts at position (0,0).
+	Action: Selecting host sends "Start" message with initial speed.
+	The second player will receive the start message and update its ball state.
+	Action: Second player receives the start message.
+	It is important to note that the speeds always refer to the player that is sending data. Therefore, the data must be
+	adapted to the other player's environment when it receives a packet.
+	Every block movement is an action that needs to be sent over the network.
+	Action: player sends block movement (increments)
+	Every collision that happens to a player's block generates a packet too
+	Action: player sends collision packet when ball collides with its block
+	When the ball goes out of bounds, it's a point, and the "losing" side will signal that.
+	Action: player who detects point informs that to the other player.
+	The rules of the game will determine who wins. When that happens, the connection between players will be automatically
+	terminated. Both will change its status to available on the server, and will return to the lobby.
+	Action: players send packet that changes their status to available.

@@ -54,9 +54,9 @@ public class NewForms extends KeyAdapter implements GLEventListener {
     private float rotationParameterZ;
     
     private final float step;
-    private int timeDelay;
+    private final int timeDelay;
     private static Timer timer;
-    private Updater updater;
+    private final Updater updater;
     
     private final BallModel ballModel;
     private final ParallelepipedModel leftParallelepipedModel;
@@ -290,91 +290,103 @@ public class NewForms extends KeyAdapter implements GLEventListener {
             switch(e.getKeyCode())
             {
                 case KeyEvent.VK_LEFT: // Moves to the left
-                    if (!CollisionAnalyzer.analyzeCollision(nearParallelepipedModel, -step, 0.0f) &&
+                    /*if (!CollisionAnalyzer.analyzeCollision(nearParallelepipedModel, -step, 0.0f) &&
                         !CollisionAnalyzer.analyzeCollisionWithBall(nearParallelepipedModel, -step, 0.0f))
                     {
                         nearParallelepipedModel.updatePosition(-step, 0.0f);
-                    }
+                    }*/
+                    nearParallelepipedModel.move(-step, 0);
                 break;
 
                 case KeyEvent.VK_RIGHT: // Moves to the right
-                    if (!CollisionAnalyzer.analyzeCollision(nearParallelepipedModel, step, 0.0f) &&
-                        !CollisionAnalyzer.analyzeCollisionWithBall(nearParallelepipedModel, step, 0.0f))
-                    {
-                        nearParallelepipedModel.updatePosition(step, 0.0f);
-                    }
+//                    if (!CollisionAnalyzer.analyzeCollision(nearParallelepipedModel, step, 0.0f) &&
+//                        !CollisionAnalyzer.analyzeCollisionWithBall(nearParallelepipedModel, step, 0.0f))
+//                    {
+//                        nearParallelepipedModel.updatePosition(step, 0.0f);
+//                    }
+                    nearParallelepipedModel.move(step, 0);
                 break;
 
                 case KeyEvent.VK_A: // Moves the second object to the left
-                    if (!CollisionAnalyzer.analyzeCollision(farParallelepipedModel, -step, 0.0f) &&
-                        !CollisionAnalyzer.analyzeCollisionWithBall(farParallelepipedModel, -step, 0.0f))
-                    {
-                        farParallelepipedModel.updatePosition(-step, 0.0f);
-                    }
+//                    if (!CollisionAnalyzer.analyzeCollision(farParallelepipedModel, -step, 0.0f) &&
+//                        !CollisionAnalyzer.analyzeCollisionWithBall(farParallelepipedModel, -step, 0.0f))
+//                    {
+//                        farParallelepipedModel.updatePosition(-step, 0.0f);
+//                    }
+                    farParallelepipedModel.move(-step, 0);
                 break;
 
                 case KeyEvent.VK_D: // Moves the second object to the right
-                    if (!CollisionAnalyzer.analyzeCollision(farParallelepipedModel, step, 0.0f) &&
-                        !CollisionAnalyzer.analyzeCollisionWithBall(farParallelepipedModel, step, 0.0f))
-                    {
-                        farParallelepipedModel.updatePosition(step, 0.0f);
-                    }
+//                    if (!CollisionAnalyzer.analyzeCollision(farParallelepipedModel, step, 0.0f) &&
+//                        !CollisionAnalyzer.analyzeCollisionWithBall(farParallelepipedModel, step, 0.0f))
+//                    {
+//                        farParallelepipedModel.updatePosition(step, 0.0f);
+//                    }
+                    farParallelepipedModel.move(step, 0);
                 break;
 
                 case KeyEvent.VK_NUMPAD4:
-                    if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, 0.0f))
-                    {
-                        ballModel.updatePosition(-step, 0.0f);
-                    }
+//                    if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, 0.0f))
+//                    {
+//                        ballModel.updatePosition(-step, 0.0f);
+//                    }
+                    ballModel.move(-step, 0);
                 break;
 
                 case KeyEvent.VK_NUMPAD6:
-                    if(!CollisionAnalyzer.analyzeCollision(ballModel, step, 0.0f))
-                    {
-                        ballModel.updatePosition(step, 0.0f);
-                    }
+//                    if(!CollisionAnalyzer.analyzeCollision(ballModel, step, 0.0f))
+//                    {
+//                        ballModel.updatePosition(step, 0.0f);
+//                    }
+                    ballModel.move(step, 0);
                 break;
 
                 case KeyEvent.VK_NUMPAD2:
-                    if(!CollisionAnalyzer.analyzeCollision(ballModel, 0.0f, step))
-                    {
-                        ballModel.updatePosition(0.0f, step);
-                    }
+//                    if(!CollisionAnalyzer.analyzeCollision(ballModel, 0.0f, step))
+//                    {
+//                        ballModel.updatePosition(0.0f, step);
+//                    }
+                    ballModel.move(0, step);
                 break;
 
                 case KeyEvent.VK_NUMPAD8:
-                    if(!CollisionAnalyzer.analyzeCollision(ballModel, 0.0f, -step))
-                    {
-                        ballModel.updatePosition(0.0f, -step);
-                    }
+//                    if(!CollisionAnalyzer.analyzeCollision(ballModel, 0.0f, -step))
+//                    {
+//                        ballModel.updatePosition(0.0f, -step);
+//                    }
+                    ballModel.move(0, -step);
                 break;
 
                 case KeyEvent.VK_NUMPAD1:
-                    if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, step))
-                    {
-                        ballModel.updatePosition(-step, step);
-                    }
+//                    if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, step))
+//                    {
+//                        ballModel.updatePosition(-step, step);
+//                    }
+                    ballModel.move(-step, step);
                 break;
 
                 case KeyEvent.VK_NUMPAD3:
-                    if(!CollisionAnalyzer.analyzeCollision(ballModel, step, step))
-                    {
-                        ballModel.updatePosition(step, step);
-                    }
+//                    if(!CollisionAnalyzer.analyzeCollision(ballModel, step, step))
+//                    {
+//                        ballModel.updatePosition(step, step);
+//                    }
+                    ballModel.move(step, step);
                 break;
 
                 case KeyEvent.VK_NUMPAD7:
-                    if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, -step))
-                    {
-                        ballModel.updatePosition(-step, -step);
-                    }
+//                    if(!CollisionAnalyzer.analyzeCollision(ballModel, -step, -step))
+//                    {
+//                        ballModel.updatePosition(-step, -step);
+//                    }
+                    ballModel.move(-step, -step);
                 break;
 
                 case KeyEvent.VK_NUMPAD9:
-                    if(!CollisionAnalyzer.analyzeCollision(ballModel, step, -step))
-                    {
-                        ballModel.updatePosition(step, -step);
-                    }
+//                    if(!CollisionAnalyzer.analyzeCollision(ballModel, step, -step))
+//                    {
+//                        ballModel.updatePosition(step, -step);
+//                    }
+                    ballModel.move(step, -step);
                 break;
 
                 case KeyEvent.VK_F: // Moves to the left
