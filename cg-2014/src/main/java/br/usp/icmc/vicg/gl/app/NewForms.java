@@ -25,6 +25,7 @@ import br.usp.icmc.vicg.gl.util.ShaderFactory.ShaderType;
 
 import com.jogamp.opengl.util.AnimatorBase;
 import com.jogamp.opengl.util.FPSAnimator;
+import game.GameAgents;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
 import javax.swing.Timer;
 import physics.*;
 
-public class NewForms implements GLEventListener {
+public class NewForms extends KeyAdapter implements GLEventListener {
 
     private final Shader shader; // Gerenciador dos shaders
     private final Matrix4 modelMatrix;
@@ -51,6 +52,8 @@ public class NewForms implements GLEventListener {
     private float rotationParameterY;
     private float rotationParameterX;
     private float rotationParameterZ;
+    
+    private final GameAgents agents;
     
     private final float step;
     private final int timeDelay;
@@ -131,7 +134,8 @@ public class NewForms implements GLEventListener {
         
         light = new Light();
         material = new Material();
-        ball = new JWavefrontObject(new File("./data/bola/bola.obj"));
+        //ball = new JWavefrontObject(new File("./data/bola/bola.obj"));
+        ball = new JWavefrontObject(new File("./data/pokeball/Pokeball.obj"));
         
         analyzer = new CollisionAnalyzer();
         
@@ -140,6 +144,8 @@ public class NewForms implements GLEventListener {
         rightParallelepipedModel = new ParallelepipedModel(-0.5f + distanceFromCenter, 0.5f + distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale);
         nearParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, zDistance - 0.5f, zDistance + 0.5f);
         farParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, -(zDistance + 0.5f), -(zDistance - 0.5f));
+        
+        agents = new GameAgents(ballModel, nearParallelepipedModel, farParallelepipedModel, leftParallelepipedModel, rightParallelepipedModel);
     }
 
     @Override
@@ -199,7 +205,7 @@ public class NewForms implements GLEventListener {
 
         material.init(gl, shader);
         material.setAmbientColor(new float[]{0.1f, 0.1f, 0.1f, 0.0f});
-        material.setDiffuseColor(new float[]{0.0f, 1.0f, 1.0f, 0.0f});
+        material.setDiffuseColor(new float[]{0.0f, 0.0f, 1.0f, 0.0f});
         material.setSpecularColor(new float[]{0.9f, 0.9f, 0.9f, 0.0f});
         material.setSpecularExponent(32);
         material.bind();
@@ -281,7 +287,6 @@ public class NewForms implements GLEventListener {
         gl.glFlush();
     }
     
-    
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
     }
@@ -298,68 +303,8 @@ public class NewForms implements GLEventListener {
     {
         animator = a;
     }
-
-    public static void main(String[] args) {
-        // Get GL3 profile (to work with OpenGL 4.0)
-        GLProfile profile = GLProfile.get(GLProfile.GL3);
-
-        // Configurations
-        GLCapabilities glcaps = new GLCapabilities(profile);
-        glcaps.setDoubleBuffered(true);
-        glcaps.setHardwareAccelerated(true);
-
-        // Create canvas
-        GLCanvas glCanvas = new GLCanvas(glcaps);
-
-        // Add listener to panel
-        NewForms listener = new NewForms();
-        glCanvas.addGLEventListener(listener);
-
-        Frame frame = new Frame("Pong 3D (beta)");
-        frame.setSize(1020, 1020);
-        frame.add(glCanvas);
-        frame.addKeyListener(updater);
-        final AnimatorBase animator = new FPSAnimator(glCanvas, 60);
-        listener.bindAnimator(animator);
-
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        animator.stop();
-                        System.exit(0);
-                    }
-
-                }).start();
-            }
-
-        });
-        frame.setVisible(true);
-        animator.start();
-        timer.start();
-    }
-
-    public class Updater extends KeyAdapter implements ActionListener
-    {
-        @Override
-        public void actionPerformed(ActionEvent ae) 
-        {
-            
-//            double dt = 0.05;
-//            spring.updatePositionAndVelocity(dt);
-//            springGame.setLocationY(spring.getLocationX());
-//            
-//            System.out.println( spring.getLocationX() );            
-//            springGame.update();
-            //nearParallelepipedDisplacement = nearParallelepipedModel.getX();
-            //farParallelepipedDisplacement = farParallelepipedModel.getX();
-            
-            ballModel.move(step);
-        }   
-        
-        @Override
+    
+    @Override
         public void keyPressed(KeyEvent e)
         {
             if(animator.isAnimating())
@@ -595,5 +540,64 @@ public class NewForms implements GLEventListener {
             //printParameters();
         }
 
+    public static void main(String[] args) {
+        // Get GL3 profile (to work with OpenGL 4.0)
+        GLProfile profile = GLProfile.get(GLProfile.GL3);
+
+        // Configurations
+        GLCapabilities glcaps = new GLCapabilities(profile);
+        glcaps.setDoubleBuffered(true);
+        glcaps.setHardwareAccelerated(true);
+
+        // Create canvas
+        GLCanvas glCanvas = new GLCanvas(glcaps);
+
+        // Add listener to panel
+        NewForms listener = new NewForms();
+        glCanvas.addGLEventListener(listener);
+
+        Frame frame = new Frame("Pong 3D (beta)");
+        frame.setSize(1020, 1020);
+        frame.add(glCanvas);
+        frame.addKeyListener(listener /*updater*/);
+        final AnimatorBase animator = new FPSAnimator(glCanvas, 60);
+        listener.bindAnimator(animator);
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        animator.stop();
+                        System.exit(0);
+                    }
+
+                }).start();
+            }
+
+        });
+        frame.setVisible(true);
+        animator.start();
+        timer.start();
+    }
+
+    public class Updater implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent ae) 
+        {
+            
+//            double dt = 0.05;
+//            spring.updatePositionAndVelocity(dt);
+//            springGame.setLocationY(spring.getLocationX());
+//            
+//            System.out.println( spring.getLocationX() );            
+//            springGame.update();
+            //nearParallelepipedDisplacement = nearParallelepipedModel.getX();
+            //farParallelepipedDisplacement = farParallelepipedModel.getX();
+            
+            ballModel.move(step);
+        }   
     }
 }

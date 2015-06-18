@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
  *
  * @author Adriano
  */
-public class GameServer extends MultiplayerAgent implements Runnable
+public class ServerAgent extends MultiplayerAgent implements Runnable
 {     
     private final Socket clientHandlerSocket;
     private static LinkedHashMap players;
@@ -47,7 +47,7 @@ public class GameServer extends MultiplayerAgent implements Runnable
                 clientSocket = serverSocket.accept();
                 System.out.println("Server connected to " + clientSocket.getInetAddress().getHostAddress());
             
-                GameServer serverHandler = new GameServer(clientSocket);
+                ServerAgent serverHandler = new ServerAgent(clientSocket);
                 Thread serverThread = new Thread(serverHandler);
                 serverThread.start();
             }
@@ -58,7 +58,7 @@ public class GameServer extends MultiplayerAgent implements Runnable
         }
     }
 
-    private GameServer(Socket clientSocket) throws IOException 
+    private ServerAgent(Socket clientSocket) throws IOException 
     {
         clientHandlerSocket = clientSocket;
         

@@ -11,8 +11,6 @@ package multiplayer;
  */
 public abstract class MultiplayerAgent implements NetworkingConstants
 {   
-    
-    
     public class NotConnectedException extends Exception
     {
         public NotConnectedException(String message)

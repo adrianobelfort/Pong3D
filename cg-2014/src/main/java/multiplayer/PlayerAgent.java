@@ -5,6 +5,7 @@
  */
 package multiplayer;
 
+import game.GameAgents;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author Adriano
  */
-public class GamePlayer extends MultiplayerAgent 
+public class PlayerAgent extends MultiplayerAgent 
 {
     private Socket serverSocket;
     private Socket rivalSocket;
@@ -30,13 +31,17 @@ public class GamePlayer extends MultiplayerAgent
     private DataInputStream rivalInputStream;
     private DataOutputStream rivalOutputStream;
     private boolean playerAvailability;
-    private Thread connectionWaiter;
+    private final GameAgents agents;
     
-    GamePlayer()
+    private Thread connectionWaiter;
+    private Thread packetChecker;
+    
+    public PlayerAgent(GameAgents gameAgents)
     {
         playerAvailability = true;
         serverSocket = null;
         rivalSocket = null;
+        agents = gameAgents;
     }
     
     public void guaranteePlayerConnection() throws NotConnectedException
@@ -104,6 +109,61 @@ public class GamePlayer extends MultiplayerAgent
             
             rivalInputStream = new DataInputStream(new BufferedInputStream(rivalSocket.getInputStream()));
             rivalOutputStream = new DataOutputStream(new BufferedOutputStream(rivalSocket.getOutputStream()));
+            
+            packetChecker = new Thread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    while(true)
+                    {
+                        try {
+                            switch(rivalInputStream.readShort())
+                            {
+                                case changingAvailability:
+                                    
+                                break;
+                                    
+                                case ballCollision:
+                                    
+                                break;
+                                    
+                                case movingBlock:
+                                    
+                                break;
+                                    
+                                case requestingPlayersList:
+                                    
+                                break;
+                                    
+                                case sendingPlayersList:
+                                    
+                                break;
+                                        
+                                case invitationToPlay:
+                                    
+                                break;
+                                    
+                                case responseToInvitationToPlay:
+                                    
+                                break;
+                                    
+                                case pointsScored:
+                                    
+                                break;
+                                    
+                                case gameStarts:
+                                    
+                                break;
+                            }
+                        } catch (IOException ex) {
+                            Logger.getLogger(PlayerAgent.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            });
+            
+            packetChecker.start();
         } 
         catch (IOException ex) 
         {
@@ -122,6 +182,7 @@ public class GamePlayer extends MultiplayerAgent
         }
         
         System.out.println("Closing connection with the rival");
+        packetChecker.interrupt();
         rivalInputStream.close();
         rivalOutputStream.close();
         rivalSocket.close();
@@ -160,7 +221,7 @@ public class GamePlayer extends MultiplayerAgent
                 } 
                 catch (IOException ex) 
                 {
-                    Logger.getLogger(GamePlayer.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(PlayerAgent.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
