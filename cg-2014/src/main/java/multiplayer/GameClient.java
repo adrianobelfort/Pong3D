@@ -6,6 +6,7 @@ package multiplayer;
  * and open the template in the editor.
  */
 
+import game.GameAgents;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -31,7 +32,10 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
     private DataInputStream serverInput = null, playerInput; 
     private DataOutputStream serverOutput = null, playerOutput;
     private String nickname, rivalNickname;
+    private String serverIP, rivalIP;
+    private int serverPort;
     private boolean playerAvailability;
+    private GameAgents gameAgents;
     
     private static int rivalListeningPort;
     private static int myListeningPort;
@@ -40,8 +44,14 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
     
     private final TreeMap<String, PlayerInfo> players;
     
-    GameClient()
+    public GameClient(String serverIP, GameAgents gameAgents)
     {
+        // Initialization of server and ports
+        this.serverIP = serverIP;
+        serverPort = serverListeningPort;
+        myListeningPort = playerListeningPort;
+        this.gameAgents = gameAgents;
+        
         playerAvailability = true;
         players = new TreeMap<>();
     }
@@ -79,12 +89,16 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
     public static void main(String[] args) throws IOException 
     {
         scanner = new Scanner(System.in);
+        String servAddress;
         
         System.out.print("Enter the port at which YOU will be listening: ");
-        myListeningPort = scanner.nextInt();
+        //myListeningPort = scanner.nextInt();
         scanner.nextLine();
+        System.out.print("Enter the address of the server: ");
+        servAddress = scanner.nextLine();
         
-        new Thread(new GameClient()).start();
+        // The line below is what is going to be called from the game
+        //new Thread(new GameClient(servAddress)).start();
     }
     
     public Thread acceptConnections(final int listeningPort)
@@ -212,19 +226,11 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
     public void run()
     {
         String destination, action;
-        //String stringToSend, stringToReceive;
-        String serverIP, rivalIP;
         String mNick, rNick;
-        int serverPort;
         
         try 
         {
             playerToPlayerSocket = null;
-            
-            // You can move this part to the constructor when implementing the actual game
-            System.out.print("Enter the address of the server: ");
-            serverIP = scanner.nextLine();
-            serverPort = serverListeningPort;
             
             System.out.println("Connecting to " + serverIP + " at port " + serverPort + "...");
             try
@@ -237,12 +243,13 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                 System.out.println("Unable to connect to server.");
             }
             
-            // It's better to move this line to the constructor later...
+            // It's better to move this line into the constructor later...
             incomingConnectionsSocket = new ServerSocket(myListeningPort/*listeningPort*/);
             // maybe comment this later - maybe not
             acceptConnections(myListeningPort);
             
-            
+            // This part of the code will be just a guideline for the attachment to the part of the code
+            // that deals with the actual game agents
             do
             {                
                 System.out.print("Specify the destination: ");
@@ -304,6 +311,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                     {
                         disconnectFromPlayer();
                         changeAvailability(true);
+                        // Think about adding the line below
                         //acceptConnections(playerListeningPort);
                     }
                     else if (action.equalsIgnoreCase("accept connections"))
@@ -512,6 +520,13 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
         playerOutput.flush();
     }
     
+    @Override
+    public void sendGamePause() throws IOException 
+    {
+        playerOutput.writeShort(pauseGameCode);
+        playerOutput.flush();
+    }
+    
     // SERVER METHODS
     
     public void changeAvailability(boolean newAvailability) throws IOException
@@ -568,10 +583,16 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
         serverOutput.flush();
     }
 
+    @Override
+    public void sendGameResume() throws IOException 
+    {
+        playerOutput.writeShort(resumeGameCode);
+        playerOutput.flush();
+    }
+
     public class PlayerListener implements Runnable, PlayerReceivingProtocol
     {
         private final Socket clientSocket;
-        //private final DataInputStream playerInput;
 
         PlayerListener(Socket newSocket) throws IOException
         {
@@ -662,6 +683,9 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
 
             System.out.println("\nCollision detected!\n\tBall position: ("+xPosition+ ", " +zPosition+")");
             System.out.println("\tSpeed: (" + vx + ", " + vz + ")");
+            
+            gameAgents.getBall().updateAbsolutePosition(-xPosition, -zPosition);
+            gameAgents.getBall().setSpeed(-vx, -vz);
         }
 
         @Override
@@ -712,12 +736,15 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
         @Override
         public void receiveGameStart() throws IOException 
         {
-            float[] initialSpeeds = new float[2];
+            float xInitialSpeed, zInitialSpeed;
             
-            initialSpeeds[0] = playerInput.readFloat();
-            initialSpeeds[1] = playerInput.readFloat();
+            xInitialSpeed = playerInput.readFloat();
+            zInitialSpeed = playerInput.readFloat();
             
-            System.out.println("Game starts with ball moving towards ("+initialSpeeds[0]+", "+initialSpeeds[1]+")");
+            System.out.println("Game starts with ball moving towards ("+xInitialSpeed+", "+zInitialSpeed+")");
+            
+            gameAgents.getBall().updateAbsolutePosition(0, 0);
+            gameAgents.getBall().setSpeed(xInitialSpeed, zInitialSpeed);
         }
 
         @Override
@@ -728,7 +755,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             xIncrement = playerInput.readFloat();
             zIncrement = playerInput.readFloat();
             
-            System.out.println("Block is shifted by ("+xIncrement+", "+zIncrement+")");
+            System.out.println("Rival block is shifted by ("+xIncrement+", "+zIncrement+")");
+            gameAgents.getRivalBlock().move(-xIncrement, -zIncrement);
         }
 
         @Override
@@ -754,12 +782,24 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             playerInput.close();
             clientSocket.close();
         }
+
+        @Override
+        public void receiveGamePause() throws IOException 
+        {
+            // Pause animator and timer
+            // Store that the pause came from the network (so that the player can't resume the game)            
+        }
+
+        @Override
+        public void receiveGameResume() throws IOException 
+        {
+            // Unpause animator and timer
+        }
     }
     
     public class ServerListener implements Runnable
     {
         private final Socket serverSocket;
-        //private final DataInputStream serverInput;
 
         ServerListener(Socket newSocket) throws IOException
         {

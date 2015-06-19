@@ -22,4 +22,6 @@ public interface PlayerReceivingProtocol
     public void receiveBlockMove() throws IOException;
     public void receivePointsScored() throws IOException;
     public void receiveDisconnectFromPlayer() throws IOException;
+    public void receiveGamePause() throws IOException;
+    public void receiveGameResume() throws IOException;
 }

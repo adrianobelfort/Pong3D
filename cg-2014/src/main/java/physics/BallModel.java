@@ -50,6 +50,11 @@ public class BallModel extends CollideableObject
         movement.updateSpeed(xSpeed, zSpeed);
     }
     
+    public float[] getSpeeds()
+    {
+        return movement.getSpeed();
+    }
+    
     @Override
     public boolean move(float xIncrement, float zIncrement)
     {

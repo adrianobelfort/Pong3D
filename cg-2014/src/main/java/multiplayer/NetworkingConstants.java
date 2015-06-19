@@ -24,6 +24,8 @@ public interface NetworkingConstants
     public static final short scoredPointsCode = 5;
     public static final short gameStartCode = 6;
     public static final short closeConnectionCode = 7;
+    public static final short pauseGameCode = 15;
+    public static final short resumeGameCode = 16;
     
     // Server codes
     public static final short changeAvailabilityCode = 8;

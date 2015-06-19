@@ -22,4 +22,6 @@ public interface PlayerSendingProtocol
     public void sendBlockMove(float xIncrement, float zIncrement) throws IOException;
     public void sendPointsScored(int pointsIncrement) throws IOException;
     public void sendDisconnectToPlayer() throws IOException;
+    public void sendGamePause() throws IOException;
+    public void sendGameResume() throws IOException;
 }
