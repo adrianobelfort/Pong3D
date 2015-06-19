@@ -134,8 +134,8 @@ public class NewForms extends KeyAdapter implements GLEventListener {
         
         light = new Light();
         material = new Material();
-        //ball = new JWavefrontObject(new File("./data/bola/bola.obj"));
-        ball = new JWavefrontObject(new File("./data/pokeball/Pokeball.obj"));
+        ball = new JWavefrontObject(new File("./data/bola/bola.obj"));
+        //ball = new JWavefrontObject(new File("./data/pokeball/Pokeball.obj"));
         
         analyzer = new CollisionAnalyzer();
         
