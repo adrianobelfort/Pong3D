@@ -25,6 +25,7 @@ public class GameState
     public int rivalScore;
     public boolean winner;
     public boolean bound;
+    public Thread animatorThread;
     
     public GameState(final AnimatorBase animator, Timer timer)
     {
@@ -34,7 +35,7 @@ public class GameState
         playing = false;
         bound = false;
         
-        new Thread(new Runnable() 
+        animatorThread = new Thread(new Runnable() 
         {
             @Override
             public void run() 
@@ -42,7 +43,8 @@ public class GameState
                 //timer.start();
                 animator.start();
             }
-        }).start();
+        });
+        animatorThread.start();
 
         try {
             this.wait(0, 1000);
@@ -58,6 +60,21 @@ public class GameState
                 animator.pause();
             }
         }).start();
+    }
+    
+    public void bind()
+    {
+        bound = true;
+    }
+    
+    public void unbind()
+    {
+        bound = false;
+    }
+    
+    public boolean isBound()
+    {
+        return bound;
     }
     
     public void pauseTimer()
@@ -99,8 +116,8 @@ public class GameState
                 @Override
                 public void run() 
                 {
-                    timer.start();
-                    animator.resume();
+                    if (!timer.isRunning()) timer.start();
+                    if (!animator.isAnimating()) animator.resume();
                 }
             }).start();
             return true;

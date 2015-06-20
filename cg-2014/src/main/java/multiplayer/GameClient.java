@@ -34,10 +34,11 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
     private DataOutputStream serverOutput = null, playerOutput;
     private String nickname, rivalNickname;
     private String serverIP, rivalIP;
-    private int serverPort;
+    private final int serverPort;
     private boolean playerAvailability;
-    private GameAgents gameAgents;
-    private GameState gameState;
+    private final GameAgents gameAgents;
+    private final GameState gameState;
+    private boolean iStart;
     
     private static int rivalListeningPort;
     private static int myListeningPort;
@@ -57,6 +58,16 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
         
         playerAvailability = true;
         players = new TreeMap<>();
+    }
+    
+    public boolean whoStarts()
+    {
+        return iStart;
+    }
+    
+    public String getRivalNickname()
+    {
+        return rivalNickname;
     }
     
     public void printPlayersList()
@@ -128,6 +139,9 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                         playerOutput = new DataOutputStream(new BufferedOutputStream(playerToPlayerSocket.getOutputStream()));
                         denyConnections();
                         
+                        iStart = false;
+                        gameState.bind();
+                        
                         System.out.println("Player connected to player at " + playerToPlayerSocket.getInetAddress().getHostAddress() + ", port " + playerToPlayerSocket.getPort());
                     }
                     else
@@ -189,6 +203,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             playerInput.close();
             playerOutput.close();
             playerToPlayerSocket.close();
+            
+            gameState.unbind();
         }
         changeAvailability(true);
     }
@@ -268,7 +284,12 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                     {                        
                         System.out.print("Enter the nickname of the player to which you want to connect: ");
                         rNick = scanner.nextLine();
-                        PlayerInfo player = players.get(rNick);
+                        PlayerInfo player;
+                        
+                        synchronized(players)
+                        {
+                            player = players.get(rNick);
+                        }
                         
                         if (player == null)
                         {
@@ -819,7 +840,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             playerInput.close();
             clientSocket.close();
             
-            gameState.bound = false;
+            gameState.unbind();
         }
 
         @Override

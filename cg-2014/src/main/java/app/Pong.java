@@ -90,9 +90,8 @@ public class Pong extends KeyAdapter implements GLEventListener {
     
     CollisionAnalyzer analyzer;
     
-    private Thread multiplayerThread;
-    
-    private GameClient multiplayerHandler;
+    private final Thread multiplayerThread;
+    private final GameClient multiplayerHandler;
     
     private void printParameters()
     {
@@ -105,7 +104,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
         System.out.println("\tUpper parallelepiped: " + nearParallelepipedDisplacement + " bottom parallelepiped: " + farParallelepipedDisplacement + "\n");
     }
     
-    public Pong(String serverIP) {
+    public Pong(String serverIP, AnimatorBase _animator) {
         // Carrega os shaders
         // Changed from VIEW_MODEL_PROJECTION_MATRIX_SHADER to COMPLETE_SHADER
         //shader = ShaderFactory.getInstance(ShaderType.VIEW_MODEL_PROJECTION_MATRIX_SHADER);
@@ -153,6 +152,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
         nearParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, zDistance - 0.5f, zDistance + 0.5f);
         farParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, -(zDistance + 0.5f), -(zDistance - 0.5f));
         
+        animator = _animator;
         agents = new GameAgents(ballModel, nearParallelepipedModel, farParallelepipedModel, leftParallelepipedModel, rightParallelepipedModel);
         state = new GameState(animator, timer);
         multiplayerHandler = new GameClient(serverIP, agents, state);
@@ -198,7 +198,8 @@ public class Pong extends KeyAdapter implements GLEventListener {
                         viewUpVector[0], viewUpVector[1], viewUpVector[2]);
         viewMatrix.bind();
         
-        try {
+        try 
+        {
             //init the model
             ball.init(gl, shader);
             ball.unitize();
@@ -230,7 +231,8 @@ public class Pong extends KeyAdapter implements GLEventListener {
     }
 
     @Override
-    public void display(GLAutoDrawable drawable) {
+    public void display(GLAutoDrawable drawable) 
+    {
         // Recupera o pipeline
         GL3 gl = drawable.getGL().getGL3();
 
@@ -493,26 +495,57 @@ public class Pong extends KeyAdapter implements GLEventListener {
                 case KeyEvent.VK_1:
                     if (!state.isPaused())
                     {
-                        state.pauseGame(true);
+                        if(state.pauseGame(true))
+                        {
+                            multiplayerHandler.sendGamePause();
+                        }
                     }
                     else 
                     {
-                        state.resumeGame(true);
+                        if(state.resumeGame(true))
+                        {
+                            multiplayerHandler.sendGameResume();
+                        }
                     }
                 break;
 
-                //  Remove this option later
+                //  Remove this option later (?)
                 case KeyEvent.VK_2:
                     if (timer.isRunning())
                     {
-                        timer.stop();
+                        multiplayerHandler.sendTimerPause();
+                        state.pauseTimer();
                     }
                     else
                     {
-                        timer.start();
+                        multiplayerHandler.sendTimerResume();
+                        state.resumeTimer();
                     }
                 break;
-
+                    
+                case KeyEvent.VK_S:
+                    if (state.isBound() && multiplayerHandler.whoStarts())
+                    {
+                        ballModel.updateAbsolutePosition(0, 0);
+                        ballModel.setSpeed((float) Math.random(), (float) Math.random());
+                        // Multiplayer code
+                        multiplayerHandler.sendGameStart(ballModel.getSpeeds());
+                        // End of multiplayer code
+                        state.startGame();
+                    }
+                    else
+                    {
+                        if (!state.isBound())
+                        {
+                            System.out.println("You are not connected to another player");
+                        }
+                        if (!multiplayerHandler.whoStarts())
+                        {
+                            System.out.println(multiplayerHandler.getRivalNickname() + " is the one who starts the game");
+                        }
+                    }
+                break;
+                    
                 case KeyEvent.VK_ESCAPE:
                     state.stopGame();
                     System.exit(1);
@@ -528,7 +561,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
         }
     }
 
-    public static void main(String[] args) 
+    public static void main(String[] args) throws InterruptedException 
     {
         // Get GL3 profile (to work with OpenGL 4.0)
         GLProfile profile = GLProfile.get(GLProfile.GL3);
@@ -546,33 +579,35 @@ public class Pong extends KeyAdapter implements GLEventListener {
         String serverIP = scanner.nextLine();
 
         // Add listener to panel
-        Pong listener = new Pong(serverIP);
+        final AnimatorBase animator = new FPSAnimator(glCanvas, 60);
+        final Pong listener = new Pong(serverIP, animator);
         glCanvas.addGLEventListener(listener);
 
         Frame frame = new Frame("Pong 3D (beta)");
         frame.setSize(1020, 1020);
         frame.add(glCanvas);
         frame.addKeyListener(listener /*updater*/);
-        final AnimatorBase animator = new FPSAnimator(glCanvas, 60);
-        listener.bindAnimator(animator);
+        //listener.bindAnimator(animator);
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 new Thread(new Runnable() {
                     @Override
-                    public void run() {
-                        animator.stop();
-                        System.exit(0);
+                    public void run() 
+                    {
+                        listener.state.stopGame();
                     }
-
                 }).start();
             }
 
         });
+        
         frame.setVisible(true);
-        animator.start();
-        timer.start();
+        
+        //animator.start();
+        //timer.start();
+        listener.state.animatorThread.join();
     }
 
     public class Updater implements ActionListener
