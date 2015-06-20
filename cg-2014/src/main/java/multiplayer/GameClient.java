@@ -7,6 +7,7 @@ package multiplayer;
  */
 
 import game.GameAgents;
+import game.GameState;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -36,6 +37,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
     private int serverPort;
     private boolean playerAvailability;
     private GameAgents gameAgents;
+    private GameState gameState;
     
     private static int rivalListeningPort;
     private static int myListeningPort;
@@ -44,13 +46,14 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
     
     private final TreeMap<String, PlayerInfo> players;
     
-    public GameClient(String serverIP, GameAgents gameAgents)
+    public GameClient(String serverIP, GameAgents gameAgents, GameState gameState)
     {
         // Initialization of server and ports
         this.serverIP = serverIP;
         serverPort = serverListeningPort;
         myListeningPort = playerListeningPort;
         this.gameAgents = gameAgents;
+        this.gameState = gameState;
         
         playerAvailability = true;
         players = new TreeMap<>();
@@ -351,6 +354,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                         sinc = scanner.nextInt();
                         scanner.nextLine();
                         
+                        gameState.playerScore += sinc;
                         sendPointsScored(sinc);
                     }
                     else if (action.equalsIgnoreCase("game start"))
@@ -590,6 +594,20 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
         playerOutput.flush();
     }
 
+    @Override
+    public void sendTimerPause() throws IOException 
+    {
+        playerOutput.writeShort(pauseTimerCode);
+        playerOutput.flush();
+    }
+
+    @Override
+    public void sendTimerResume() throws IOException 
+    {
+        playerOutput.writeShort(resumeTimerCode);
+        playerOutput.flush();
+    }
+
     public class PlayerListener implements Runnable, PlayerReceivingProtocol
     {
         private final Socket clientSocket;
@@ -644,6 +662,22 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                             
                         case gameStartCode:
                             receiveGameStart();
+                        break;
+                            
+                        case pauseGameCode:
+                            receiveGamePause();
+                        break;
+                            
+                        case resumeGameCode:
+                            receiveGameResume();
+                        break;
+                            
+                        case pauseTimerCode:
+                            receiveTimerPause();
+                        break;
+                            
+                        case resumeTimerCode:
+                            receiveTimerResume();
                         break;
                             
                         case closeConnectionCode:
@@ -720,6 +754,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             if (response == true)
             {
                 System.out.println(rivalNickname + " accepted your request to play");
+                gameState.bound = true;
             }
             else if (response == false && rivalAvailability == true)
             {
@@ -774,6 +809,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             {
                 System.out.println();
             }
+            
+            gameState.rivalScore += points;
         }
 
         @Override
@@ -781,19 +818,35 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
         {
             playerInput.close();
             clientSocket.close();
+            
+            gameState.bound = false;
         }
 
         @Override
         public void receiveGamePause() throws IOException 
         {
             // Pause animator and timer
-            // Store that the pause came from the network (so that the player can't resume the game)            
+            // Store that the pause came from the network (so that the player can't resume the game)
+            gameState.pauseGame(false);
         }
 
         @Override
         public void receiveGameResume() throws IOException 
         {
+            gameState.resumeGame(false);
             // Unpause animator and timer
+        }
+
+        @Override
+        public void receiveTimerPause() throws IOException 
+        {
+            gameState.pauseTimer();
+        }
+
+        @Override
+        public void receiveTimerResume() throws IOException 
+        {
+            gameState.resumeTimer();
         }
     }
     

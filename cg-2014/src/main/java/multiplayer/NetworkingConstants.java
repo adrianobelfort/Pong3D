@@ -26,6 +26,8 @@ public interface NetworkingConstants
     public static final short closeConnectionCode = 7;
     public static final short pauseGameCode = 15;
     public static final short resumeGameCode = 16;
+    public static final short pauseTimerCode = 17;
+    public static final short resumeTimerCode = 18;
     
     // Server codes
     public static final short changeAvailabilityCode = 8;

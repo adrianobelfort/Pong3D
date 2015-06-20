@@ -24,4 +24,6 @@ public interface PlayerReceivingProtocol
     public void receiveDisconnectFromPlayer() throws IOException;
     public void receiveGamePause() throws IOException;
     public void receiveGameResume() throws IOException;
+    public void receiveTimerPause() throws IOException;
+    public void receiveTimerResume() throws IOException;
 }

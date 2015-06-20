@@ -6,6 +6,8 @@
 package game;
 
 import com.jogamp.opengl.util.AnimatorBase;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Timer;
 
 /**
@@ -22,13 +24,64 @@ public class GameState
     public int playerScore;
     public int rivalScore;
     public boolean winner;
+    public boolean bound;
     
-    public GameState(AnimatorBase animator, Timer timer)
+    public GameState(final AnimatorBase animator, Timer timer)
     {
         this.animator = animator;
         this.timer = timer;
         started = false;
         playing = false;
+        bound = false;
+        
+        new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                //timer.start();
+                animator.start();
+            }
+        }).start();
+
+        try {
+            this.wait(0, 1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                animator.pause();
+            }
+        }).start();
+    }
+    
+    public void pauseTimer()
+    {
+        new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                timer.stop();
+            }
+        }).start();
+    }
+    
+    public void resumeTimer()
+    {
+        new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                timer.start();
+            }
+        }).start();
     }
     
     public boolean startGame()
@@ -40,35 +93,78 @@ public class GameState
         else
         {
             started = true;
-            animator.start();
-            timer.start();
+            
+            new Thread(new Runnable() 
+            {
+                @Override
+                public void run() 
+                {
+                    timer.start();
+                    animator.resume();
+                }
+            }).start();
             return true;
         }
     }
     
-    public void pauseGame(boolean requester)
+    public boolean pauseGame(boolean requester)
     {
-        playing = false;
-        pauseRequester = requester;
+        if (playing)
+        {
+            new Thread(new Runnable() 
+            {
+                @Override
+                public void run() 
+                {
+                    timer.stop();
+                    animator.pause();
+                }
+            }).start();
         
-        animator.pause();
-        timer.stop();
+            playing = false;
+            pauseRequester = requester;
+            
+            return true;
+        }
+        
+        return false;
     }
     
     public boolean resumeGame(boolean requester)
     {
-        if (requester == pauseRequester)
+        if (requester == pauseRequester && !playing)
         {
             playing = true;
             
-            animator.resume();
-            timer.start();
+            new Thread(new Runnable() 
+            {
+                @Override
+                public void run() 
+                {
+                    timer.start();
+                    animator.resume();
+                }
+            }).start();
+            
             return true;
         }
         else
         {
             return false;
         }
+    }
+    
+    public void stopGame()
+    {
+        new Thread(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                timer.stop();
+                animator.stop();
+            }
+        }).start();
     }
     
     public int getPlayerScore()
@@ -102,5 +198,10 @@ public class GameState
     public boolean whoWon()
     {
         return winner;
+    }
+    
+    public boolean isPaused()
+    {
+        return playing == false;
     }
 }

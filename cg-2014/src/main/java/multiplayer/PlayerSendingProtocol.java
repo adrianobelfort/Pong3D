@@ -24,4 +24,6 @@ public interface PlayerSendingProtocol
     public void sendDisconnectToPlayer() throws IOException;
     public void sendGamePause() throws IOException;
     public void sendGameResume() throws IOException;
+    public void sendTimerPause() throws IOException;
+    public void sendTimerResume() throws IOException;
 }
