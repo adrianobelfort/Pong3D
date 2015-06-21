@@ -522,17 +522,17 @@ public class Pong extends KeyAdapter implements GLEventListener {
                 break;
                     
                 case KeyEvent.VK_S:
-                    if (state.isBound() && multiplayerHandler.whoStarts())
-                    {
+                    //if (state.isBound() && multiplayerHandler.whoStarts())
+                    //{
                         System.out.println("Game should start now");
                         ballModel.updateAbsolutePosition(0, 0);
                         ballModel.setSpeed((float) Math.random(), (float) Math.random());
                         // Multiplayer code
                         multiplayerHandler.sendGameStart(ballModel.getSpeeds());
                         // End of multiplayer code
-                        state.startGame();
-                    }
-                    else
+                        //state.startGame();
+                   // }
+                   /* else
                     {
                         if (!state.isBound())
                         {
@@ -542,7 +542,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
                         {
                             System.out.println(multiplayerHandler.getRivalNickname() + " is the one who starts the game");
                         }
-                    }
+                    }*/
                 break;
                     
                 case KeyEvent.VK_ESCAPE:
@@ -600,8 +600,11 @@ public class Pong extends KeyAdapter implements GLEventListener {
                         listener.state.stopGame();
                         try 
                         {
-                            listener.multiplayerHandler.disconnectFromPlayer();
-                            listener.multiplayerHandler.disconnectFromServer();
+                            if (listener.multiplayerHandler != null) 
+                            {
+                                listener.multiplayerHandler.disconnectFromPlayer();
+                                listener.multiplayerHandler.disconnectFromServer();
+                            }
                         } catch (IOException ex) {
                             //Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -613,6 +616,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
         });
         
         frame.setVisible(true);
+        listener.state.beginAnimation();
         
         //animator.start();
         //timer.start();

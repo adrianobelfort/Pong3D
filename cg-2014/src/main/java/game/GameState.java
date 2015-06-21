@@ -43,8 +43,9 @@ public class GameState
             @Override
             public void run() 
             {
+                System.out.println("Starting graphic part");
                 // line below was commented before
-                timer.start();
+                //timer.start();
                 animator.start();
             }
         });
