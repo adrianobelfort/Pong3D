@@ -211,7 +211,8 @@ public class GameServer implements Runnable, NetworkingConstants, ServerReceivin
             if (player != null)
             {
                 player.changeAvailability(newAvailability);
-                players.replace(playerNickname, player);
+                //players.replace(playerNickname, player);
+                players.put(playerNickname, player);    // In compliance with older versions of Java
                 printPlayersList();
             }
         }
@@ -227,10 +228,12 @@ public class GameServer implements Runnable, NetworkingConstants, ServerReceivin
         
         synchronized(players)
         {
-            if (players.putIfAbsent(chosenNickname, tentativeNewPlayer) != null)
+            //if (players.putIfAbsent(chosenNickname, tentativeNewPlayer) != null)
+            if (players.containsKey(chosenNickname))
             {
                 return false;
             }
+            players.put(chosenNickname, tentativeNewPlayer);    // In compliance with older versions of Java
         }
         
         playerNickname = chosenNickname;

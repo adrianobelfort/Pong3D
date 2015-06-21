@@ -263,6 +263,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             catch (IOException ex)
             {
                 System.out.println("Unable to connect to server.");
+                System.exit(2);
             }
             
             // It's better to move this line into the constructor later...
@@ -915,7 +916,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                     
                     if (players.containsKey(receivedNickname))
                     {
-                        players.replace(receivedNickname, receivedInfo);
+                        //players.replace(receivedNickname, receivedInfo);
+                        players.put(receivedNickname, receivedInfo);    // In compliance with older versions of Java
                     }
                     else
                     {
