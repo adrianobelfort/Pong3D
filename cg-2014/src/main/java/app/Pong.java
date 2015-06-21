@@ -530,7 +530,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
                         // Multiplayer code
                         multiplayerHandler.sendGameStart(ballModel.getSpeeds());
                         // End of multiplayer code
-                        //state.startGame();
+                        state.startGame();
                     }
                     else
                     {

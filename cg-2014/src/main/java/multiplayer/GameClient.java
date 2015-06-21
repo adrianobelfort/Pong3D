@@ -814,6 +814,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             
             gameAgents.getBall().updateAbsolutePosition(0, 0);
             gameAgents.getBall().setSpeed(-xInitialSpeed, -zInitialSpeed);
+            gameState.startGame();
         }
 
         @Override
