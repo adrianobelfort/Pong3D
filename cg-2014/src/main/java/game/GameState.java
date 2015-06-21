@@ -34,7 +34,10 @@ public class GameState
         started = false;
         playing = false;
         bound = false;
-        
+    }
+    
+    public void beginAnimation()
+    {
         animatorThread = new Thread(new Runnable() 
         {
             @Override

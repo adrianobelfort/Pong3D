@@ -141,6 +141,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                         
                         iStart = false;
                         gameState.bind();
+                        gameState.beginAnimation();
                         
                         System.out.println("Player connected to player at " + playerToPlayerSocket.getInetAddress().getHostAddress() + ", port " + playerToPlayerSocket.getPort());
                     }
@@ -263,7 +264,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             catch (IOException ex)
             {
                 System.out.println("Unable to connect to server.");
-                System.exit(2);
+                return;
             }
             
             // It's better to move this line into the constructor later...
@@ -307,6 +308,9 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                         try
                         {
                             connectToPlayer(rivalIP);
+                            // Added this
+                            gameState.bind();
+                            gameState.beginAnimation();
                         }
                         catch (IOException ex)
                         {

@@ -33,6 +33,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,13 +57,10 @@ public class Pong extends KeyAdapter implements GLEventListener {
     private float rotationParameterX;
     private float rotationParameterZ;
     
-    private final GameAgents agents;
-    private final GameState state;
-    
     private final float step;
     private final int timeDelay;
-    private static Timer timer;
-    private static Updater updater;
+    public static Timer timer;
+    public static Updater updater;
     
     private final BallModel ballModel;
     private final ParallelepipedModel leftParallelepipedModel;
@@ -86,12 +84,12 @@ public class Pong extends KeyAdapter implements GLEventListener {
     
     private final float[] viewUpVector;
     
-    private AnimatorBase animator;
-    
-    CollisionAnalyzer analyzer;
-    
-    private final Thread multiplayerThread;
-    private final GameClient multiplayerHandler;
+    public final GameAgents agents;
+    public final GameState state;
+    public AnimatorBase animator;
+    public CollisionAnalyzer analyzer;
+    public Thread multiplayerThread;
+    public GameClient multiplayerHandler;
     
     private void printParameters()
     {
@@ -579,7 +577,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
         System.out.print("Enter the address of the game server: ");
         Scanner scanner = new Scanner(System.in);
         String serverIP = scanner.nextLine();
-
+        
         // Add listener to panel
         final AnimatorBase animator = new FPSAnimator(glCanvas, 60);
         final Pong listener = new Pong(serverIP, animator);
@@ -604,7 +602,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
                             listener.multiplayerHandler.disconnectFromPlayer();
                             listener.multiplayerHandler.disconnectFromServer();
                         } catch (IOException ex) {
-                            Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
+                            //Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         System.exit(0);
                     }
