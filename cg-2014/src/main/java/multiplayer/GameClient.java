@@ -140,8 +140,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                         denyConnections();
                         
                         iStart = false;
-                        gameState.bind();
-                        gameState.beginAnimation();
+//                        gameState.bind();
+//                        gameState.beginAnimation();
                         
                         System.out.println("Player connected to player at " + playerToPlayerSocket.getInetAddress().getHostAddress() + ", port " + playerToPlayerSocket.getPort());
                     }
@@ -192,6 +192,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
         {
             denyConnections();
         }
+        
+        iStart = true;
         
         // Beware here!
         new Thread(new PlayerListener(playerToPlayerSocket)).start();
@@ -309,8 +311,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                         {
                             connectToPlayer(rivalIP);
                             // Added this
-                            gameState.bind();
-                            gameState.beginAnimation();
+//                            gameState.bind();
+//                            gameState.beginAnimation();
                         }
                         catch (IOException ex)
                         {
@@ -654,6 +656,9 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             boolean running = true;
             boolean safeToProceed = true;
             short opcode;
+            
+            gameState.bind();
+            gameState.beginAnimation();
             
             System.out.println("[Player listener is ON]");
             

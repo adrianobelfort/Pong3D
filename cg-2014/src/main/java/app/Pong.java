@@ -524,12 +524,13 @@ public class Pong extends KeyAdapter implements GLEventListener {
                 case KeyEvent.VK_S:
                     if (state.isBound() && multiplayerHandler.whoStarts())
                     {
+                        System.out.println("Game should start now");
                         ballModel.updateAbsolutePosition(0, 0);
                         ballModel.setSpeed((float) Math.random(), (float) Math.random());
                         // Multiplayer code
                         multiplayerHandler.sendGameStart(ballModel.getSpeeds());
                         // End of multiplayer code
-                        state.startGame();
+                        //state.startGame();
                     }
                     else
                     {

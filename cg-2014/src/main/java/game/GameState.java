@@ -55,14 +55,14 @@ public class GameState
             Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
         }*/
 
-        new Thread(new Runnable() 
+        /*new Thread(new Runnable() 
         {
             @Override
             public void run() 
             {
                 animator.pause();
             }
-        }).start();
+        }).start();*/
     }
     
     public void bind()
