@@ -813,7 +813,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             System.out.println("Game starts with ball moving towards ("+xInitialSpeed+", "+zInitialSpeed+")");
             
             gameAgents.getBall().updateAbsolutePosition(0, 0);
-            gameAgents.getBall().setSpeed(xInitialSpeed, zInitialSpeed);
+            gameAgents.getBall().setSpeed(-xInitialSpeed, -zInitialSpeed);
         }
 
         @Override
