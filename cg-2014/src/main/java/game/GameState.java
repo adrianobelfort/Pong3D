@@ -43,7 +43,8 @@ public class GameState
             @Override
             public void run() 
             {
-                //timer.start();
+                // line below was commented before
+                timer.start();
                 animator.start();
             }
         });
