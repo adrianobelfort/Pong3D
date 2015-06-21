@@ -548,6 +548,8 @@ public class Pong extends KeyAdapter implements GLEventListener {
                     
                 case KeyEvent.VK_ESCAPE:
                     state.stopGame();
+                    multiplayerHandler.disconnectFromPlayer();
+                    multiplayerHandler.disconnectFromServer();
                     System.exit(1);
                 break;
             }
@@ -561,7 +563,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException 
+    public static void main(String[] args) throws InterruptedException
     {
         // Get GL3 profile (to work with OpenGL 4.0)
         GLProfile profile = GLProfile.get(GLProfile.GL3);
@@ -597,6 +599,14 @@ public class Pong extends KeyAdapter implements GLEventListener {
                     public void run() 
                     {
                         listener.state.stopGame();
+                        try 
+                        {
+                            listener.multiplayerHandler.disconnectFromPlayer();
+                            listener.multiplayerHandler.disconnectFromServer();
+                        } catch (IOException ex) {
+                            Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        System.exit(0);
                     }
                 }).start();
             }
@@ -607,7 +617,9 @@ public class Pong extends KeyAdapter implements GLEventListener {
         
         //animator.start();
         //timer.start();
-        listener.state.animatorThread.join();
+        
+        //listener.state.animatorThread.join();
+        System.out.println("Program came to an end");
     }
 
     public class Updater implements ActionListener

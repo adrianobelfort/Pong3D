@@ -222,6 +222,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
     {
         if (playerToServerSocket != null && !playerToServerSocket.isClosed())
         {
+            requestToUnregisterPlayer();
+            
             serverInput.close();
             serverOutput.close();
             playerToServerSocket.close();
@@ -246,6 +248,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
     {
         String destination, action;
         String mNick, rNick;
+        scanner = new Scanner(System.in);
         
         try 
         {

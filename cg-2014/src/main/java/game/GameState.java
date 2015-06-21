@@ -46,11 +46,11 @@ public class GameState
         });
         animatorThread.start();
 
-        try {
+        /*try {
             this.wait(0, 1000);
         } catch (InterruptedException ex) {
             Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
 
         new Thread(new Runnable() 
         {
