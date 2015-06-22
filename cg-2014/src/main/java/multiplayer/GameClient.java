@@ -140,6 +140,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                         denyConnections();
                         
                         iStart = false;
+                        // watch
 //                        gameState.bind();
 //                        gameState.beginAnimation();
                         

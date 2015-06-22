@@ -616,7 +616,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
         });
         
         frame.setVisible(true);
-        listener.state.beginAnimation();
+        //listener.state.beginAnimation();
         
         //animator.start();
         //timer.start();
