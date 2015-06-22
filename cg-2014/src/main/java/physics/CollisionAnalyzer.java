@@ -70,22 +70,11 @@ public class CollisionAnalyzer
     
     
     // colisao entre 2 quadrados. Parametro coord indica qual a coordenada que se deseja realizar a analise da colisao
-    public static boolean analyzeCollision(CollideableObject obj1, CollideableObject obj2)
+    public static boolean analyzeCollision(CollideableObject obj1, CollideableObject obj2, float xIn, float zIn)
     {
         float bound1[] = obj1.getBoundaries();
         float bound2[] = obj2.getBoundaries();
-             
-            // ob1 na esquerda e 1.max > 2.min
-            if     ((obj1.getX() < obj2.getX()) && (bound1[1] > bound2[0])) return true;
-            // ob2 na esquerda e 2.max > 1.min
-            else if ((obj2.getX() < obj1.getX()) && (bound2[1] > bound1[0])) return true;
-       
-            // ob2 em baixo e 2.max > 1.min
-            else if((obj2.getZ() < obj1.getZ()) && (bound2[1] > bound1[0])) return true;
-            // ob1 em baixo e 1.max > 2.min
-            else if ((obj1.getZ() < obj2.getZ()) && (bound1[1] > bound2[0])) return true;
-        
-        else return false;
+        return (bound1[0]+xIn < bound2[1]) && (bound1[1]+xIn > bound2[0]) && (bound1[2]+zIn < bound2[3]) && (bound1[3]+zIn > bound2[2]);
     }
     
     public static boolean analyzeCollision(BallModel obj1, CollideableObject obj2)
@@ -96,20 +85,11 @@ public class CollisionAnalyzer
     
     public static boolean analyzeCollision(CollideableObject object, float xIncrement, float zIncrement)
     {
-        float[] objectBoundaries = object.getBoundaries();
-        
-        objectBoundaries[0] += xIncrement;
-        objectBoundaries[1] += xIncrement;
-        objectBoundaries[2] += zIncrement;
-        objectBoundaries[3] += zIncrement;
         
         for (ParallelepipedModel worldObject : worldObjects) 
-        {
             if (object != worldObject)
-            {
-                if (analyzeCollision((CollideableObject) object, (CollideableObject) worldObject)) return true;
-            }
-        }
+                if (analyzeCollision((CollideableObject) object, (CollideableObject) worldObject, xIncrement, zIncrement)) return true;
+            
         
         /* create a way to determine if a ball is really colliding with another element
         tip: use the least-distance to a point to evaluate if a new calculation is needed
@@ -121,9 +101,13 @@ public class CollisionAnalyzer
     // analisa colisao da bola com qualquer outra coisa
     public static ParallelepipedModel analyzeCollisionFromBallWithAnything(BallModel object, float xIncrement, float zIncrement)
     {   
-        for (ParallelepipedModel worldObject : worldObjects) 
+        for (ParallelepipedModel worldObject : worldObjects)
         {
-            if (analyzeCollision((CollideableObject) object, (CollideableObject) worldObject)) return worldObject;
+            if (analyzeCollision((CollideableObject) object, (CollideableObject) worldObject, xIncrement, zIncrement))
+            {
+                
+                return worldObject;
+            }
         }
         return null;
     }
@@ -157,6 +141,18 @@ public class CollisionAnalyzer
         return false;
     }
     
+    public static ParallelepipedModel analyzeCollisionFromBallWithAnythingExceptObj1(BallModel object, float xIncrement, float zIncrement, ParallelepipedModel Obj1)
+    {
+        for (ParallelepipedModel worldObject : worldObjects) 
+        {
+            if (worldObject != Obj1)
+                if (analyzeCollision((CollideableObject) object, (CollideableObject) worldObject, xIncrement, zIncrement))
+                {
+                    return worldObject;
+                }
+        }
+        return null;
+    }
     
     public static boolean analyzeCollisionWithBall(ParallelepipedModel object, float xIncrement, float zIncrement)
     {

@@ -11,11 +11,16 @@ package physics;
  */
 public class ParallelepipedModel extends CollideableObject 
 {
-    public ParallelepipedModel(float xmin, float xmax, float zmin, float zmax, float[] normal)
+    private static float innerBound;
+   
+    public ParallelepipedModel(float xmin, float xmax, float zmin, float zmax, float[] normal, float in_bound)
     {
         super(xmin, xmax, zmin, zmax, normal);
+        innerBound = in_bound;
         CollisionAnalyzer.addObject(this);
     }
+    
+    public float getInnerBound() { return innerBound; }
     
     @Override
     public boolean move(float xIncrement, float zIncrement)
