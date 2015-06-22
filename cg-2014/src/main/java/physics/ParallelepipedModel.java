@@ -11,9 +11,9 @@ package physics;
  */
 public class ParallelepipedModel extends CollideableObject 
 {
-    public ParallelepipedModel(float xmin, float xmax, float zmin, float zmax)
+    public ParallelepipedModel(float xmin, float xmax, float zmin, float zmax, float[] normal)
     {
-        super(xmin, xmax, zmin, zmax);
+        super(xmin, xmax, zmin, zmax, normal);
         CollisionAnalyzer.addObject(this);
     }
     
@@ -27,5 +27,13 @@ public class ParallelepipedModel extends CollideableObject
             return true;
         }
         return false;
+    }
+
+    float getZdist() {
+        return zdist;
+    }
+
+    float getXdist() {
+        return xdist;
     }
 }

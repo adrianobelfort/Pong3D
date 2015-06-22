@@ -17,8 +17,11 @@ public abstract class CollideableObject
     protected float zmax;
     protected float xcenter;
     protected float zcenter;
+    protected float zdist;
+    protected float xdist;
+    protected float[] normal;
     
-    public CollideableObject(float xmin, float xmax, float zmin, float zmax)
+    public CollideableObject(float xmin, float xmax, float zmin, float zmax, float[] normal)
     {
         this.xmin = xmin;
         this.xmax = xmax;
@@ -26,6 +29,15 @@ public abstract class CollideableObject
         this.zmax = zmax;
         this.xcenter = (xmin + xmax)/2.0f;
         this.zcenter = (zmin + zmax)/2.0f;
+        this.normal = new float[2];
+        this.normal = normal;
+        this.zdist = (zmax - zmin)/2;
+        this.xdist = (xmax - xmin)/2;
+    }
+    
+    public float[] getNormal()
+    {
+        return normal;
     }
     
     public float getX()

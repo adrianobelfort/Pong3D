@@ -144,11 +144,11 @@ public class Pong extends KeyAdapter implements GLEventListener {
         
         analyzer = new CollisionAnalyzer();
         
-        ballModel = new BallModel(-0.5f, 0.5f, -0.5f, 0.5f, 0.5f, (float) Math.random(), (float) Math.random());
-        leftParallelepipedModel = new ParallelepipedModel(-0.5f - distanceFromCenter, 0.5f - distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale);
-        rightParallelepipedModel = new ParallelepipedModel(-0.5f + distanceFromCenter, 0.5f + distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale);
-        nearParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, zDistance - 0.5f, zDistance + 0.5f);
-        farParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, -(zDistance + 0.5f), -(zDistance - 0.5f));
+        ballModel = new BallModel(-0.5f, 0.5f, -0.5f, 0.5f, 0.5f, (float) Math.random(), (float) Math.random(),  step);
+        leftParallelepipedModel = new ParallelepipedModel(-0.5f - distanceFromCenter, 0.5f - distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale, new float[]{1.0f, 0.0f});
+        rightParallelepipedModel = new ParallelepipedModel(-0.5f + distanceFromCenter, 0.5f + distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale,  new float[]{-1.0f, 0.0f});
+        nearParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, zDistance - 0.5f, zDistance + 0.5f, new float[]{0.0f, -1.0f});
+        farParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, -(zDistance + 0.5f), -(zDistance - 0.5f), new float[]{0.0f, 1.0f});
         
         animator = _animator;
         agents = new GameAgents(ballModel, nearParallelepipedModel, farParallelepipedModel, leftParallelepipedModel, rightParallelepipedModel);
