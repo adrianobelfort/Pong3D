@@ -783,8 +783,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             vx = playerInput.readFloat();
             vz = playerInput.readFloat();
 
-            System.out.println("\nCollision detected!\n\tBall position: ("+xPosition+ ", " +zPosition+")");
-            System.out.println("\tSpeed: (" + vx + ", " + vz + ")");
+            //System.out.println("\nCollision detected!\n\tBall position: ("+xPosition+ ", " +zPosition+")");
+            //System.out.println("\tSpeed: (" + vx + ", " + vz + ")");
             
             gameAgents.getBall().updateAbsolutePosition(-xPosition, -zPosition);
             gameAgents.getBall().setSpeed(-vx, -vz);
@@ -860,7 +860,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             xIncrement = playerInput.readFloat();
             zIncrement = playerInput.readFloat();
             
-            System.out.println("Rival block is shifted by ("+xIncrement+", "+zIncrement+")");
+            //System.out.println("Rival block is shifted by ("+xIncrement+", "+zIncrement+")");
             gameAgents.getRivalBlock().move(-xIncrement, -zIncrement);
         }
 

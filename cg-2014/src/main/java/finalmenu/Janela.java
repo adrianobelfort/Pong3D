@@ -37,72 +37,60 @@ public class Janela extends javax.swing.JFrame {
         JInstructions = new javax.swing.JButton();
         jSair = new javax.swing.JButton();
         jCreditos = new javax.swing.JLabel();
-        jTitulo = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(1000, 500));
+        getContentPane().setLayout(null);
 
-        jStart.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jStart.setText("Start");
+        jStart.setBackground(new java.awt.Color(255, 0, 0));
+        jStart.setFont(new java.awt.Font("AR DESTINE", 0, 18)); // NOI18N
+        jStart.setForeground(new java.awt.Color(255, 255, 255));
+        jStart.setText("Iniciar");
+        jStart.setFocusPainted(false);
         jStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jStartActionPerformed(evt);
             }
         });
+        getContentPane().add(jStart);
+        jStart.setBounds(330, 240, 96, 40);
 
-        JInstructions.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        JInstructions.setBackground(new java.awt.Color(0, 255, 0));
+        JInstructions.setFont(new java.awt.Font("AR DESTINE", 0, 18)); // NOI18N
+        JInstructions.setForeground(new java.awt.Color(255, 255, 255));
         JInstructions.setText("Instruções");
+        JInstructions.setFocusPainted(false);
         JInstructions.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 JInstructionsActionPerformed(evt);
             }
         });
+        getContentPane().add(JInstructions);
+        JInstructions.setBounds(440, 240, 130, 40);
 
-        jSair.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jSair.setBackground(new java.awt.Color(0, 0, 255));
+        jSair.setFont(new java.awt.Font("AR DESTINE", 0, 18)); // NOI18N
+        jSair.setForeground(new java.awt.Color(255, 255, 255));
         jSair.setText("Sair");
+        jSair.setFocusPainted(false);
         jSair.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jSairActionPerformed(evt);
             }
         });
+        getContentPane().add(jSair);
+        jSair.setBounds(580, 240, 96, 40);
 
         jCreditos.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jCreditos.setText("por Adriano Belfor, Rodrigo Ferrari e Ilan Figueiredo");
+        jCreditos.setText("por Adriano Belfort, Rodrigo Ferrari e Ilan Figueiredo");
+        getContentPane().add(jCreditos);
+        jCreditos.setBounds(356, 423, 283, 44);
 
-        jTitulo.setFont(new java.awt.Font("Arial", 1, 36)); // NOI18N
-        jTitulo.setText("pongl");
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(JInstructions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jStart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSair, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTitulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(356, 356, 356)
-                .addComponent(jCreditos)
-                .addContainerGap(366, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(64, Short.MAX_VALUE)
-                .addComponent(jTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(49, 49, 49)
-                .addComponent(jStart, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(44, 44, 44)
-                .addComponent(JInstructions, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(50, 50, 50)
-                .addComponent(jSair, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(56, 56, 56)
-                .addComponent(jCreditos, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33))
-        );
+        jLabel1.setIcon(new javax.swing.ImageIcon("C:\\Users\\Adriano\\Documents\\NetBeansProjects\\Pong3D\\cg-2014\\data\\pong1000.png")); // NOI18N
+        jLabel1.setText("jLabel1");
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(1, -4, 1000, 510);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -172,8 +160,8 @@ public class Janela extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton JInstructions;
     private javax.swing.JLabel jCreditos;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JButton jSair;
     private javax.swing.JButton jStart;
-    private javax.swing.JLabel jTitulo;
     // End of variables declaration//GEN-END:variables
 }

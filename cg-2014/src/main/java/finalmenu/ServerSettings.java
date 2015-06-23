@@ -5,7 +5,12 @@
  */
 package finalmenu;
 
+import static finalmenu.Menu_janela.newAgents;
+import static finalmenu.Menu_janela.newMultiplayerHandler;
+import static finalmenu.Menu_janela.newState;
+import static finalmenu.Menu_janela.serverIP;
 import javax.swing.JFrame;
+import multiplayer.GameClient;
 
 /**
  *
@@ -101,6 +106,13 @@ public class ServerSettings extends javax.swing.JFrame {
     private void jAdvanceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAdvanceActionPerformed
         // TODO add your handling code here;
         final String IP = jTextArea1.getText();
+        
+        Menu_janela.serverIP = IP;
+        
+        newMultiplayerHandler = new GameClient(serverIP, newAgents, newState);
+        Thread multiplayerThread = new Thread(newMultiplayerHandler);
+        multiplayerThread.start();
+        
         // chama Nickname
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

@@ -87,7 +87,7 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
     public GameClient multiplayerHandler;
     
     public GLCanvas glCanvas;
-    private static Pong painter;
+    public static Pong painter;
     private Frame frame;
     
     public static void main(String[] args) throws InterruptedException
