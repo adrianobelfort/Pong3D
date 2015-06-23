@@ -5,6 +5,8 @@
  */
 package physics;
 
+import app.Pong;
+
 /**
  *
  * @author Adriano
@@ -165,18 +167,21 @@ public class BallModel extends CollideableObject
             if (normal[0] == 1.0f)
             {
                 step1 = (ballBorders[0] - borders[1]) / Math.abs(speed[0]); 
+                Pong.collisionWithWall = true;
                 System.out.println("Aproximacao lateral na direita");
             }
             // se for o plano esquerdo
             else if(normal[0] == -1.0f)
             {
                 step1 = (ballBorders[1] - borders[0]) / Math.abs(speed[0]); 
+                Pong.collisionWithWall = true;
                 System.out.println("Aproximacao lateral na izquierda");
             }
             //se for o plano far
             else if (normal[1] == 1.0f)
             {
                 step1 = (ballBorders[2] - borders[3]) / Math.abs(speed[1]);
+                Pong.collisionWithWall = false;
                 updateSpeed = true;
                 System.out.println("Aproximacao frontal la atras");
             }
@@ -184,6 +189,7 @@ public class BallModel extends CollideableObject
             else if(normal[1] == -1.0f)
             {
                 step1 = (ballBorders[3] - borders[2]) / Math.abs(speed[1]); 
+                Pong.collisionWithWall = false;
                 updateSpeed = true;
                 System.out.println("Aproximacao traseira aqui na frente");
             }
@@ -230,6 +236,8 @@ public class BallModel extends CollideableObject
 
     public boolean move(float step2, ParallelepipedModel colidedObj1) {
         float[] Increment = this.movement.positionIncrement(step2);
+        
+        Pong.collisionWithWall = false;
         ParallelepipedModel colidedObj2 = CollisionAnalyzer.analyzeCollisionFromBallWithAnythingExceptObj1(this, Increment[0], Increment[1], colidedObj1);
         if (colidedObj2 != null)
         {

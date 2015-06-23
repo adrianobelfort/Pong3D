@@ -62,6 +62,8 @@ public class Pong extends KeyAdapter implements GLEventListener {
     public static Timer timer;
     public static Updater updater;
     
+    public static boolean collisionWithWall;
+    
     private final BallModel ballModel;
     private final ParallelepipedModel leftParallelepipedModel;
     private final ParallelepipedModel rightParallelepipedModel;
@@ -576,7 +578,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
         public void actionPerformed(ActionEvent ae) 
         {       
             // se o resultado for faalso, houve colisao
-            if(!ballModel.move(step))
+            if(!ballModel.move(step) && !collisionWithWall)
             {
                 float[] speed3 = ballModel.getSpeeds();
                 try {
@@ -585,7 +587,6 @@ public class Pong extends KeyAdapter implements GLEventListener {
                     Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            farParallelepipedModel.move(0, 0);
         }   
     }
 }
