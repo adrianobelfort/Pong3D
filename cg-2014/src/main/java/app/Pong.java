@@ -305,7 +305,7 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
                         {
                             //Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        //frame.dispose(); // or maybe frame.setVisible(false);
+                        //frame.setVisible(false);
                         System.exit(0);
                     }
                 }).start();
@@ -367,7 +367,7 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
         }
         
         light.init(gl, shader);
-        light.setPosition(new float[]{0.0f, 1.0f/*0.0f*/, 0.0f/*2.0f*/, 0.0f});
+        light.setPosition(new float[]{0.0f, 1.0f, 0.0f, 0.0f});
         light.setAmbientColor(new float[]{0.5f, 0.5f, 0.5f, 0.0f});
         light.setDiffuseColor(new float[]{0.5f, 0.5f, 0.5f, 0.0f});
         light.setSpecularColor(new float[]{0.9f, 0.9f, 0.9f, 0.0f});
@@ -679,10 +679,11 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
         @Override
         public void actionPerformed(ActionEvent ae) 
         {       
+            float[] speed3 = ballModel.getSpeeds();
+            //System.out.println("Speeds: (x) " + speed3[0] + " (z) " + speed3[1]);
             // se o resultado for verdadeiro, houve colisao com os planos controlados pelo usuarios
             if(ballModel.move(step))
             {
-                float[] speed3 = ballModel.getSpeeds();
                 try {
                     multiplayerHandler.sendCollision(ballModel.getX(), ballModel.getZ(), speed3[0], speed3[1]);
                 } catch (IOException ex) {
