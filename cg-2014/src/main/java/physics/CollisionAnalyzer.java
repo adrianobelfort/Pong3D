@@ -17,15 +17,10 @@ import java.util.ArrayList;
  */
 public class CollisionAnalyzer 
 {
-    private static ArrayList<ParallelepipedModel> worldObjects;
+    private static ArrayList<ParallelepipedModel> worldObjects = new ArrayList<>();
     private static BallModel ball;
     private static ParallelepipedModel nearParallelepiped;
     private static ParallelepipedModel farParallelepiped;
-    
-    public CollisionAnalyzer()
-    {
-        worldObjects = new ArrayList<>();
-    }
     
     public static void addObject(BallModel object)
     {
