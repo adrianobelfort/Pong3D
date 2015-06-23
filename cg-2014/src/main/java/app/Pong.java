@@ -327,7 +327,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
                 {
                     case KeyEvent.VK_LEFT: // Moves to the left
                         float[] speed = ballModel.getSpeeds();
-                        float result = -0.75f * (float) Math.sqrt(Math.pow((double)speed[0], 2.0) + Math.pow((double)speed[1], 2.0));
+                        float result = 0.75f * (float) Math.sqrt(Math.pow((double)speed[0], 2.0) + Math.pow((double)speed[1], 2.0));
                 
                         if (nearParallelepipedModel.move(-result, 0))
                         {
@@ -337,75 +337,11 @@ public class Pong extends KeyAdapter implements GLEventListener {
 
                     case KeyEvent.VK_RIGHT: // Moves to the right
                         float[] speed2 = ballModel.getSpeeds();
-                        float result2 = -0.75f * (float) Math.sqrt(Math.pow((double)speed2[0], 2.0) + Math.pow((double)speed2[1], 2.0));
+                        float result2 = 0.75f * (float) Math.sqrt(Math.pow((double)speed2[0], 2.0) + Math.pow((double)speed2[1], 2.0));
                 
                         if (nearParallelepipedModel.move(result2, 0))
                         {
                             multiplayerHandler.sendBlockMove(result2, 0);
-                        }
-                    break;
-
-                    case KeyEvent.VK_A:
-                        farParallelepipedModel.move(-step, 0);
-                    break;
-
-                    case KeyEvent.VK_D:
-                        farParallelepipedModel.move(step, 0);
-                    break;
-
-                    case KeyEvent.VK_NUMPAD4:
-                        if (!ballModel.move(-step, 0))
-                        {
-                            // handle collision + multiplayer
-                        }
-                    break;
-
-                    case KeyEvent.VK_NUMPAD6:
-                        if (!ballModel.move(step, 0))
-                        {
-                            // handle collision + multiplayer
-                        }
-                    break;
-
-                    case KeyEvent.VK_NUMPAD2:
-                        if(!ballModel.move(0, step))
-                        {
-                            // handle collision + multiplayer
-                        }
-                    break;
-
-                    case KeyEvent.VK_NUMPAD8:
-                        if (!ballModel.move(0, -step))
-                        {
-                            // handle collision + multiplayer
-                        }
-                    break;
-
-                    case KeyEvent.VK_NUMPAD1:
-                        if(!ballModel.move(-step, step))
-                        {
-                            // handle collision + multiplayer
-                        }
-                    break;
-
-                    case KeyEvent.VK_NUMPAD3:
-                        if(!ballModel.move(step, step))
-                        {
-                            // handle collision + multiplayer
-                        }
-                    break;
-
-                    case KeyEvent.VK_NUMPAD7:
-                        if(!ballModel.move(-step, -step))
-                        {
-                            // handle collision + multiplayer
-                        }
-                    break;
-
-                    case KeyEvent.VK_NUMPAD9:
-                        if(!ballModel.move(step, -step))
-                        {
-                            // handle collision + multiplayer
                         }
                     break;
 
