@@ -6,6 +6,7 @@ package multiplayer;
  * and open the template in the editor.
  */
 
+import app.Pong;
 import game.GameAgents;
 import game.GameState;
 import java.io.BufferedInputStream;
@@ -829,6 +830,7 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             
             System.out.println("Rival block is shifted by ("+xIncrement+", "+zIncrement+")");
             gameAgents.getRivalBlock().move(-xIncrement, -zIncrement);
+            //Pong.glCanvas.display();
         }
 
         @Override

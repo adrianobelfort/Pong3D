@@ -91,6 +91,8 @@ public class Pong extends KeyAdapter implements GLEventListener {
     public Thread multiplayerThread;
     public GameClient multiplayerHandler;
     
+    //public static GLCanvas glCanvas;
+    
     private void printParameters()
     {
         System.out.println("Current distances:");
@@ -255,6 +257,8 @@ public class Pong extends KeyAdapter implements GLEventListener {
         nearParallelepiped.bind();
         nearParallelepiped.draw();
         
+        farParallelepipedDisplacement = farParallelepipedModel.getX();
+        
         modelMatrix.loadIdentity();
         modelMatrix.translate(farParallelepipedDisplacement, 0, -zDistance);
         modelMatrix.bind();
@@ -414,7 +418,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
 
                     case KeyEvent.VK_R:
                         ballModel.updateAbsolutePosition(0, 0);
-                        ballModel.setSpeed((float) Math.random(), (float) Math.random());
+                        ballModel.setRandomSpeed();
 
                         // Multiplayer code
                         multiplayerHandler.sendGameStart(ballModel.getSpeeds());
@@ -467,7 +471,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
                     //{
                         System.out.println("Game should start now");
                         ballModel.updateAbsolutePosition(0, 0);
-                        ballModel.setSpeed((float) Math.random(), (float) Math.random());
+                        ballModel.setRandomSpeed();
                         // Multiplayer code
                         multiplayerHandler.sendGameStart(ballModel.getSpeeds());
                         // End of multiplayer code

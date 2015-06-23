@@ -50,6 +50,37 @@ public class BallModel extends CollideableObject
         movement.updateSpeed(xSpeed, zSpeed);
     }
     
+    public void setRandomSpeed()
+    {
+        float xspeed, zspeed, choice;
+        
+        choice = (float) Math.random();
+        xspeed = (float) Math.random();
+        zspeed = (float) Math.random();
+        
+        if (choice < 0.25f)
+        {
+            xspeed = -xspeed;
+            zspeed = -zspeed;
+        }
+        else if (choice >= 0.25f && choice < 0.5f)
+        {
+            // x is the same
+            zspeed = -zspeed;
+        }
+        else if (choice >= 0.5f && choice < 0.75f)
+        {
+            xspeed = -xspeed;
+            // z is the same
+        }
+        else if (choice >= 0.75f)
+        {
+            // both x and z are the same
+        }
+        
+        setSpeed(xspeed, zspeed);
+    }
+    
     public float[] getSpeeds()
     {
         return movement.getSpeed();
