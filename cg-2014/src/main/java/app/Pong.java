@@ -91,9 +91,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
     public AnimatorBase animator;
     public CollisionAnalyzer analyzer;
     public Thread multiplayerThread;
-    public GameClient multiplayerHandler;
-    
-    //public static GLCanvas glCanvas;
+    public static GameClient multiplayerHandler;
     
     private void printParameters()
     {
@@ -428,7 +426,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
                 }
 
                 nearParallelepipedDisplacement = nearParallelepipedModel.getX();
-                farParallelepipedDisplacement = farParallelepipedModel.getX();
+                //farParallelepipedDisplacement = farParallelepipedModel.getX();
             }
 
             // TODO: CONTINUE HERE!!! PAUSE GAME

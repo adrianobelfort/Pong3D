@@ -20,6 +20,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,13 +41,14 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
     private final GameAgents gameAgents;
     private final GameState gameState;
     private boolean iStart;
+    private boolean invalidList;
     
     private static int rivalListeningPort;
     private static int myListeningPort;
     
     private static Scanner scanner;
     
-    private final TreeMap<String, PlayerInfo> players;
+    public static TreeMap<String, PlayerInfo> players;
     
     public GameClient(String serverIP, GameAgents gameAgents, GameState gameState)
     {
@@ -59,6 +61,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
         
         playerAvailability = true;
         players = new TreeMap<>();
+        
+        invalidList = false;
     }
     
     public boolean whoStarts()
@@ -596,6 +600,14 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
     {
         serverOutput.writeShort(requestPlayersListCode);
         serverOutput.flush();
+        invalidList = true;
+    }
+    
+    public TreeMap getListOfPlayers() throws IOException
+    {
+        requestListOfPlayers();
+        while(invalidList);
+        return players;
     }
 
     @Override
@@ -939,6 +951,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                     }
                 }
             }
+            
+            invalidList = false;
         }
         
         @Override
