@@ -61,6 +61,7 @@ public class BallModel extends CollideableObject
     {
         float[] increment = movement.positionIncrement(timeStep);
         boolean playerControledBlocksCollision = false;
+        boolean near = false;
         
         ParallelepipedModel colidedObj = CollisionAnalyzer.analyzeCollisionFromBallWithAnything(this, increment[0], increment[1]);
         if(colidedObj == null)
@@ -100,8 +101,9 @@ public class BallModel extends CollideableObject
             //se for o plano far
             else if (normal[1] == 1.0f)
             {
+                near = false;
                 // descobrir qual o lado que houve a colisao
-                side = CollisionAnalyzer.analyzeCollisionSide(this, colidedObj, false, increment[0], increment[1]);
+                side = CollisionAnalyzer.analyzeCollisionSide(this, colidedObj, near, increment[0], increment[1]);
                 // se for pela esquerda, atualiza o vetor normal
                 if (side == 1)     
                 {
@@ -129,9 +131,10 @@ public class BallModel extends CollideableObject
             // se for o plano near
             else if(normal[1] == -1.0f)
             {
+                near = true;
                 System.out.println("Achou o plano near!");
                 // descobrir o lado q houve a colisao
-                side = CollisionAnalyzer.analyzeCollisionSide(this, colidedObj, true, increment[0], increment[1]);
+                side = CollisionAnalyzer.analyzeCollisionSide(this, colidedObj, near, increment[0], increment[1]);
                 
                 // se for pela esquerda, atualiza o vet normal
                 if (side == 1)
@@ -191,7 +194,7 @@ public class BallModel extends CollideableObject
                     
             //this.movement.positionIncrement(step2);
             //return true;
-            return this.move(0.2f * timeStep, colidedObj) || playerControledBlocksCollision;
+            return this.move(0.2f * timeStep, colidedObj) || (playerControledBlocksCollision && near);
         }   
     }
 
