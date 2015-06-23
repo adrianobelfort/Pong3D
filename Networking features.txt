@@ -1,0 +1,72 @@
+Pong 3D
+Networking features
+
+	We need to transfer the most relevant actions from peer to peer and also set up some game contexts.
+	For the connections, we can use 5 sockets (therefore 5 ports) for each of the hosts.
+	
+	1) One port will serve for communications with the game server;
+	2) Two ports will exchange game actions;
+	3) Two ports will exchange game states;
+	
+	All of those sockets will use a TCP connection.
+	
+Communication between server and host
+	
+	When a host communicates with a server, it will first register itself. That can be something automatic:
+	when the TCP connection is established, the server registers the host and the host knows it is connected.
+	The hosts will have a nickname and also an index number.
+	The list of hosts holds the names and statuses of each host. A host can send a request of available hosts
+	to the server.
+	Action: Request list of hosts.
+	Upon requestion, the server sends the nicknames, indexes and availabilities, i.e., the list of hosts.
+	Action: Send list of hosts.
+	The hosts picks an available player and request its personal info to the server.
+	Action: Request specific player info for connection.
+	The server answers the request, giving the IP address of the other host.
+	Action: Server sends the IP address of the player and its nickname.
+	? The selecting host notifies the server that its status has changed from available to requesting connection.
+	? Action: Hosts sends message to change state from available to connecting.
+	? The selected host will receive the TCP request and will change its status to connecting.
+	? Action: Selected host sends message to change state from available to connecting.
+	When the connection between the two peers is successfully established, both peers will send a request to
+	change state to "playing".
+	Action: Hosts notify state "playing" to the server.
+	The server changes their state (and possibly blocks future connections while they are playing).
+	After the game is finished, they send a request to change their state to available.
+	
+	When they choose to leave the lobby, the TCP connection is closed and the server deletes them from its list.
+	
+Host to host communication
+
+	When the hosts connect to the server, they enter a lobby of connected players and request the lobby info to it.
+	The host receives the list of connected players and their availabilities, picking one available player to connect.
+	After receiving the specific information about a player, the selecting host will try to establish a TCP connection
+	with the selected player.
+	Upon success, it will then send a request to play.
+	Action: Selecting host sends request to play.
+	If the selected player accepts the invitation, it sends a "yes" back. Otherwise, it sends "no".
+	On no:
+		The TCP connection is closed and the player goes back to the lobby. A pop-up will tell the other player's decision.
+	On yes:
+		The selecting player is notified that its invitation was accepted.
+		Game starts for both players.
+	When the game is finished, the players return to the lobby.
+		
+Game dynamics:
+	
+	The player who started the game will have the choice to start the game. There must be a start button, and, upon click,
+	a message will be sent with the initial (vectorial) speed of the ball. The ball starts at position (0,0).
+	Action: Selecting host sends "Start" message with initial speed.
+	The second player will receive the start message and update its ball state.
+	Action: Second player receives the start message.
+	It is important to note that the speeds always refer to the player that is sending data. Therefore, the data must be
+	adapted to the other player's environment when it receives a packet.
+	Every block movement is an action that needs to be sent over the network.
+	Action: player sends block movement (increments)
+	Every collision that happens to a player's block generates a packet too
+	Action: player sends collision packet when ball collides with its block
+	When the ball goes out of bounds, it's a point, and the "losing" side will signal that.
+	Action: player who detects point informs that to the other player.
+	The rules of the game will determine who wins. When that happens, the connection between players will be automatically
+	terminated. Both will change its status to available on the server, and will return to the lobby.
+	Action: players send packet that changes their status to available.

@@ -1,0 +1,39 @@
+# 3ds Max Wavefront OBJ Exporter v0.94b - (c)2007 guruware
+# File Created: 16.06.2008 19:24:33
+
+newmtl Robot_tushka
+	Ns 61.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.8 0.8 0.8
+	Kd 0.5882 0.5882 0.5882
+	Ks 0.2043 0.2043 0.2043
+	Ke 0.0000 0.0000 0.0000
+	map_Kd maps/robot-tushka.jpg
+	map_bump maps/robot-tushka.jpg
+
+newmtl Robot_boshka
+	Ns 61.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.8 0.8 0.8
+	Kd 0.5882 0.5882 0.5882
+	Ks 0.2043 0.2043 0.2043
+	Ke 0.0000 0.0000 0.0000
+	map_Kd maps/robot-bashka.jpg
+
+newmtl wire_191191191
+	Ns 32
+	d 1
+	Tr 1
+	Tf 1 1 1
+	illum 2
+	Ka 0.8 0.8 0.8
+	Kd 0.7490 0.7490 0.7490
+	Ks 0.3500 0.3500 0.3500
