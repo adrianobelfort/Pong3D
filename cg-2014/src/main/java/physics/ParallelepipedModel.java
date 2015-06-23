@@ -35,7 +35,7 @@ public class ParallelepipedModel extends CollideableObject
             // se esta indo na direcao positiva
             if (xIncrement > 0) this.updatePosition(p.getInnerBound() - bounds[1], zIncrement);
             else if(xIncrement <= 0) this.updatePosition(p.getInnerBound() - bounds[0], zIncrement);
-            return false;
+            return true;
         }
         
         // se houve colisao com a bola
@@ -88,7 +88,7 @@ public class ParallelepipedModel extends CollideableObject
         else
         {
             this.updatePosition(xIncrement, zIncrement);
-            return false;
+            return true;
         }
         //return false;
     }
