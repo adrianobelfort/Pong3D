@@ -41,8 +41,8 @@ import javax.swing.Timer;
 import multiplayer.GameClient;
 import physics.*;
 
-public class Pong extends KeyAdapter implements GLEventListener {
-
+public class Pong extends KeyAdapter implements GLEventListener, Runnable 
+{
     private final Shader shader; // Gerenciador dos shaders
     private final Matrix4 modelMatrix;
     private final Matrix4 projectionMatrix;
@@ -65,18 +65,12 @@ public class Pong extends KeyAdapter implements GLEventListener {
     public static boolean collisionWithWall;
     
     private final BallModel ballModel;
-    private final ParallelepipedModel leftParallelepipedModel;
-    private final ParallelepipedModel rightParallelepipedModel;
     private final ParallelepipedModel nearParallelepipedModel;
     private final ParallelepipedModel farParallelepipedModel;
     
     private final Light light;
     private final Material material;
     private final JWavefrontObject ball;
-    
-    private float distanceFromCenter;
-    private float parallelepipedLengthScale;
-    private float zDistance;
     
     private float ballDisplacementX;
     private float ballDisplacementZ;
@@ -86,28 +80,116 @@ public class Pong extends KeyAdapter implements GLEventListener {
     
     private final float[] viewUpVector;
     
-    public final GameAgents agents;
-    public final GameState state;
+    public GameAgents agents;
+    public GameState state;
     public AnimatorBase animator;
-    public CollisionAnalyzer analyzer;
-    public Thread multiplayerThread;
-    public static GameClient multiplayerHandler;
+//    public CollisionAnalyzer analyzer;
+    public GameClient multiplayerHandler;
     
-    private void printParameters()
+    public GLCanvas glCanvas;
+    private static Pong painter;
+    private Frame frame;
+    
+    public static void main(String[] args) throws InterruptedException
     {
-        System.out.println("Current distances:");
-        System.out.println("\tFrom center: " + distanceFromCenter + " horizontal scalar factor: " + parallelepipedLengthScale);
-        System.out.println("\tParallelepiped mutual z-distance: " + zDistance);
-        System.out.println("Camera settings:");
-        System.out.println("\tZ-distance from origin: " + cameraDistance + " camera height: " + cameraHeight);
-        System.out.println("Positions:");
-        System.out.println("\tUpper parallelepiped: " + nearParallelepipedDisplacement + " bottom parallelepiped: " + farParallelepipedDisplacement + "\n");
+        // Will be moved to the interface
+        System.out.print("Enter the address of the game server: ");
+        Scanner scanner = new Scanner(System.in);
+        String serverIP = scanner.nextLine();
+        
+        GameAgents newAgents = new GameAgents();
+        GameState newState = new GameState();
+        GameClient newMultiplayerHandler = new GameClient(serverIP, newAgents, newState);
+        Thread multiplayerThread = new Thread(newMultiplayerHandler);
+        multiplayerThread.start();
+        
+        //Pong listener = new Pong(newAgents, newState, newMultiplayerHandler);
+        painter = new Pong(newAgents, newState, newMultiplayerHandler);
+        //newState.bindPainter(listener);
+        
+        new Thread(painter).start();
     }
     
-    public Pong(String serverIP, AnimatorBase _animator) {
+    @Override
+    public void run() 
+    {
+//        // Get GL3 profile (to work with OpenGL 4.0)
+//        GLProfile profile = GLProfile.get(GLProfile.GL3);
+//
+//        // Configurations
+//        GLCapabilities glcaps = new GLCapabilities(profile);
+//        glcaps.setDoubleBuffered(true);
+//        glcaps.setHardwareAccelerated(true);
+//
+//        // Create canvas -- gui does that!
+//        glCanvas = new GLCanvas(glcaps);
+//        
+//        // Add listener to panel
+//        animator = new FPSAnimator(glCanvas, 60);
+//        //final Pong listener = new Pong(serverIP, animator);
+//        glCanvas.addGLEventListener(painter);
+//        
+//        state.bindPainter(painter);
+//        
+//        Frame frame = new Frame("pongl: a 3D experience");
+//        frame.setSize(800, 800);
+//        frame.add(glCanvas);
+//        frame.addKeyListener(painter);
+//
+//        frame.addWindowListener(new WindowAdapter() 
+//        {
+//            @Override
+//            public void windowClosing(WindowEvent e) 
+//            {
+//                new Thread(new Runnable() 
+//                {
+//                    @Override
+//                    public void run() 
+//                    {
+//                        state.stopGame();
+//                        try 
+//                        {
+//                            if (multiplayerHandler != null) 
+//                            {
+//                                multiplayerHandler.disconnectFromPlayer();
+//                                multiplayerHandler.disconnectFromServer();
+//                            }
+//                        } 
+//                        catch (IOException ex) 
+//                        {
+//                            //Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
+//                        }
+//                        //frame.dispose(); // or maybe frame.setVisible(false);
+//                        System.exit(0);
+//                    }
+//                }).start();
+//            }
+//
+//        });
+//        
+//        frame.setVisible(true);
+//        state.beginAnimation();
+        
+        //animator.start();
+        //timer.start();
+        //state.beginAnimation();
+    }
+    
+//    private void printParameters()
+//    {
+//        System.out.println("Current distances:");
+//        System.out.println("\tFrom center: " + distanceFromCenter + " horizontal scalar factor: " + parallelepipedLengthScale);
+//        System.out.println("\tParallelepiped mutual z-distance: " + zDistance);
+//        System.out.println("Camera settings:");
+//        System.out.println("\tZ-distance from origin: " + cameraDistance + " camera height: " + cameraHeight);
+//        System.out.println("Positions:");
+//        System.out.println("\tUpper parallelepiped: " + nearParallelepipedDisplacement + " bottom parallelepiped: " + farParallelepipedDisplacement + "\n");
+//    }
+    
+    public Pong(GameAgents agents, final GameState state, GameClient multiplayerClientHandler) 
+    {
         // Carrega os shaders
         // Changed from VIEW_MODEL_PROJECTION_MATRIX_SHADER to COMPLETE_SHADER
-        //shader = ShaderFactory.getInstance(ShaderType.VIEW_MODEL_PROJECTION_MATRIX_SHADER);
         shader = ShaderFactory.getInstance(ShaderType.COMPLETE_SHADER);
         modelMatrix = new Matrix4();
         projectionMatrix = new Matrix4();
@@ -127,9 +209,6 @@ public class Pong extends KeyAdapter implements GLEventListener {
         rotationParameterY = 0.0f;
         rotationParameterX = 0.0f;
         rotationParameterZ = 0.0f;
-        distanceFromCenter = 10.0f;
-        parallelepipedLengthScale = 11.0f;
-        zDistance = 16.0f;
         
         ballDisplacementX = 0.0f;
         ballDisplacementZ = 0.0f;
@@ -142,22 +221,100 @@ public class Pong extends KeyAdapter implements GLEventListener {
         light = new Light();
         material = new Material();
         ball = new JWavefrontObject(new File("./data/bola/bola.obj"));
-        //ball = new JWavefrontObject(new File("./data/pokeball/Pokeball.obj"));
         
-        analyzer = new CollisionAnalyzer();
+        this.agents = agents;
+        ballModel = agents.getBall();
+        nearParallelepipedModel = agents.getPlayerBlock();
+        farParallelepipedModel = agents.getRivalBlock();
         
-        ballModel = new BallModel(-0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.39f, 0.65f);
-        leftParallelepipedModel = new ParallelepipedModel(-0.5f - distanceFromCenter, 0.5f - distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale, new float[]{1.0f, 0.0f}, (0.5f - distanceFromCenter));
-        rightParallelepipedModel = new ParallelepipedModel(-0.5f + distanceFromCenter, 0.5f + distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale,  new float[]{-1.0f, 0.0f}, (-0.5f + distanceFromCenter));
-        nearParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, zDistance - 0.5f, zDistance + 0.5f, new float[]{0.0f, -1.0f}, (zDistance - 0.5f));
-        farParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, -(zDistance + 0.5f), -(zDistance - 0.5f), new float[]{0.0f, 1.0f}, (zDistance - 0.5f));
-          
-        animator = _animator;
-        agents = new GameAgents(ballModel, nearParallelepipedModel, farParallelepipedModel, leftParallelepipedModel, rightParallelepipedModel);
-        state = new GameState(animator, timer);
-        multiplayerHandler = new GameClient(serverIP, agents, state);
-        multiplayerThread = new Thread(multiplayerHandler);
-        multiplayerThread.start();
+        this.state = state;
+        this.multiplayerHandler = multiplayerClientHandler;
+        
+        //analyzer = new CollisionAnalyzer();
+        
+        // QUEM DEVE FAZER ISSO EH A INTERFACE!!!! watch
+        //animator = _animator;
+        //agents = new GameAgents();
+        
+//        // Get GL3 profile (to work with OpenGL 4.0)
+//        GLProfile profile = GLProfile.get(GLProfile.GL3);
+//
+//        // Configurations
+//        GLCapabilities glcaps = new GLCapabilities(profile);
+//        glcaps.setDoubleBuffered(true);
+//        glcaps.setHardwareAccelerated(true);
+//
+//        // Create canvas -- gui does that!
+//        glCanvas = new GLCanvas(glcaps);
+//        
+//        // Add listener to panel
+//        animator = new FPSAnimator(glCanvas, 60);
+//        //final Pong listener = new Pong(serverIP, animator);
+//        glCanvas.addGLEventListener(this);
+//        
+//        state.bindPainter(this);
+        
+        // watch
+        //multiplayerHandler = new GameClient(serverIP, agents, state);
+        //multiplayerThread = new Thread(multiplayerHandler);
+        //multiplayerThread.start();
+        
+        // Get GL3 profile (to work with OpenGL 4.0)
+        GLProfile profile = GLProfile.get(GLProfile.GL3);
+
+        // Configurations
+        GLCapabilities glcaps = new GLCapabilities(profile);
+        glcaps.setDoubleBuffered(true);
+        glcaps.setHardwareAccelerated(true);
+
+        // Create canvas -- gui does that!
+        glCanvas = new GLCanvas(glcaps);
+        
+        // Add listener to panel
+        animator = new FPSAnimator(glCanvas, 60);
+        //final Pong listener = new Pong(serverIP, animator);
+        glCanvas.addGLEventListener(this);
+        
+        state.bindPainter(this);
+        
+        frame = new Frame("pongl: a 3D experience");
+        frame.setSize(800, 800);
+        frame.add(glCanvas);
+        frame.addKeyListener(this);
+
+        frame.addWindowListener(new WindowAdapter() 
+        {
+            @Override
+            public void windowClosing(WindowEvent e) 
+            {
+                new Thread(new Runnable() 
+                {
+                    @Override
+                    public void run() 
+                    {
+                        state.stopGame();
+                        try 
+                        {
+                            if (multiplayerHandler != null) 
+                            {
+                                multiplayerHandler.disconnectFromPlayer();
+                                multiplayerHandler.disconnectFromServer();
+                            }
+                        } 
+                        catch (IOException ex) 
+                        {
+                            //Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        //frame.dispose(); // or maybe frame.setVisible(false);
+                        System.exit(0);
+                    }
+                }).start();
+            }
+
+        });
+        
+        frame.setVisible(true);
+//        state.beginAnimation();
     }
 
     @Override
@@ -251,7 +408,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
         
         modelMatrix.loadIdentity();
         // Translates the object based on the pressing of the buttons
-        modelMatrix.translate(nearParallelepipedDisplacement, 0, zDistance);
+        modelMatrix.translate(nearParallelepipedDisplacement, 0, agents.getZDistance());
         modelMatrix.bind();
 
         nearParallelepiped.bind();
@@ -260,7 +417,7 @@ public class Pong extends KeyAdapter implements GLEventListener {
         farParallelepipedDisplacement = farParallelepipedModel.getX();
         
         modelMatrix.loadIdentity();
-        modelMatrix.translate(farParallelepipedDisplacement, 0, -zDistance);
+        modelMatrix.translate(farParallelepipedDisplacement, 0, -agents.getZDistance());
         modelMatrix.bind();
         
         farParallelepiped.bind();
@@ -268,8 +425,8 @@ public class Pong extends KeyAdapter implements GLEventListener {
         
         modelMatrix.loadIdentity();
         modelMatrix.rotate(90, 0, 1, 0);
-        modelMatrix.scale(parallelepipedLengthScale, 1, 1);
-        modelMatrix.translate(0, 0, -distanceFromCenter);
+        modelMatrix.scale(agents.getParallelepipedLengthScale(), 1, 1);
+        modelMatrix.translate(0, 0, -agents.getXDistance());
         modelMatrix.bind();
         
         leftParallelepiped.bind();
@@ -277,8 +434,8 @@ public class Pong extends KeyAdapter implements GLEventListener {
         
         modelMatrix.loadIdentity();
         modelMatrix.rotate(90, 0, 1, 0);
-        modelMatrix.scale(parallelepipedLengthScale, 1, 1);
-        modelMatrix.translate(0, 0, distanceFromCenter);
+        modelMatrix.scale(agents.getParallelepipedLengthScale(), 1, 1);
+        modelMatrix.translate(0, 0, agents.getXDistance());
         modelMatrix.bind();
         
         rightParallelepiped.bind();
@@ -357,29 +514,29 @@ public class Pong extends KeyAdapter implements GLEventListener {
                         rotationParameterY += step;
                     break;
 
-                    case KeyEvent.VK_Y:
-                        distanceFromCenter += 2.0f * step;
-                    break;
-
-                    case KeyEvent.VK_H:
-                        distanceFromCenter -= 2.0f * step;
-                    break;
-
-                    case KeyEvent.VK_T:
-                        parallelepipedLengthScale += step;
-                    break;
-
-                    case KeyEvent.VK_G:
-                        parallelepipedLengthScale -= step;
-                    break;
-
-                    case KeyEvent.VK_B:
-                        zDistance -= step;
-                    break;
-
-                    case KeyEvent.VK_N:
-                        zDistance += step;
-                    break;
+//                    case KeyEvent.VK_Y:
+//                        distanceFromCenter += 2.0f * step;
+//                    break;
+//
+//                    case KeyEvent.VK_H:
+//                        distanceFromCenter -= 2.0f * step;
+//                    break;
+//
+//                    case KeyEvent.VK_T:
+//                        parallelepipedLengthScale += step;
+//                    break;
+//
+//                    case KeyEvent.VK_G:
+//                        parallelepipedLengthScale -= step;
+//                    break;
+//
+//                    case KeyEvent.VK_B:
+//                        zDistance -= step;
+//                    break;
+//
+//                    case KeyEvent.VK_N:
+//                        zDistance += step;
+//                    break;
 
                     case KeyEvent.VK_X:
                         if (cameraDistance <= 2.0f * step)
@@ -506,68 +663,15 @@ public class Pong extends KeyAdapter implements GLEventListener {
             Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    public static void main(String[] args) throws InterruptedException
+    
+    public AnimatorBase getAnimator()
     {
-        // Get GL3 profile (to work with OpenGL 4.0)
-        GLProfile profile = GLProfile.get(GLProfile.GL3);
-
-        // Configurations
-        GLCapabilities glcaps = new GLCapabilities(profile);
-        glcaps.setDoubleBuffered(true);
-        glcaps.setHardwareAccelerated(true);
-
-        // Create canvas
-        GLCanvas glCanvas = new GLCanvas(glcaps);
-        
-        System.out.print("Enter the address of the game server: ");
-        Scanner scanner = new Scanner(System.in);
-        String serverIP = scanner.nextLine();
-        
-        // Add listener to panel
-        final AnimatorBase animator = new FPSAnimator(glCanvas, 60);
-        final Pong listener = new Pong(serverIP, animator);
-        glCanvas.addGLEventListener(listener);
-
-        Frame frame = new Frame("Pong 3D (beta)");
-        frame.setSize(1020, 1020);
-        frame.add(glCanvas);
-        frame.addKeyListener(listener /*updater*/);
-        //listener.bindAnimator(animator);
-
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() 
-                    {
-                        listener.state.stopGame();
-                        try 
-                        {
-                            if (listener.multiplayerHandler != null) 
-                            {
-                                listener.multiplayerHandler.disconnectFromPlayer();
-                                listener.multiplayerHandler.disconnectFromServer();
-                            }
-                        } catch (IOException ex) {
-                            //Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        System.exit(0);
-                    }
-                }).start();
-            }
-
-        });
-        
-        frame.setVisible(true);
-        //listener.state.beginAnimation();
-        
-        //animator.start();
-        //timer.start();
-        
-        //listener.state.animatorThread.join();
-        System.out.println("Program came to an end");
+        return animator;
+    }
+    
+    public Timer getTimer()
+    {
+        return timer;
     }
 
     public class Updater implements ActionListener

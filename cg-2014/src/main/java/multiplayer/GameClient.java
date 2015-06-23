@@ -146,8 +146,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                         
                         iStart = false;
                         // watch
-//                        gameState.bind();
-//                        gameState.beginAnimation();
+                        gameState.bind();
+                        gameState.beginAnimation();
                         
                         System.out.println("Player connected to player at " + playerToPlayerSocket.getInetAddress().getHostAddress() + ", port " + playerToPlayerSocket.getPort());
                     }
@@ -842,7 +842,6 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             
             System.out.println("Rival block is shifted by ("+xIncrement+", "+zIncrement+")");
             gameAgents.getRivalBlock().move(-xIncrement, -zIncrement);
-            //Pong.glCanvas.display();
         }
 
         @Override

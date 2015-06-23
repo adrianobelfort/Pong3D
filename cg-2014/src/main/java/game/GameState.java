@@ -5,6 +5,7 @@
  */
 package game;
 
+import app.Pong;
 import com.jogamp.opengl.util.AnimatorBase;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,15 +27,22 @@ public class GameState
     public boolean winner;
     public boolean bound;
     public Thread animatorThread;
+    public Pong pongPainter;
     
-    public GameState(final AnimatorBase animator, Timer timer)
+    public GameState()
     {
-        this.animator = animator;
-        this.timer = timer;
         started = false;
         playing = false;
         bound = false;
     }
+    
+    public void bindPainter(Pong painter)
+    {
+        pongPainter = painter;
+        this.animator = painter.getAnimator();
+        this.timer = painter.getTimer();
+    }
+            
     
     public void beginAnimation()
     {

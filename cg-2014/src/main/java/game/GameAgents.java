@@ -6,6 +6,7 @@
 package game;
 
 import physics.BallModel;
+import physics.CollisionAnalyzer;
 import physics.ParallelepipedModel;
 
 /**
@@ -20,13 +21,41 @@ public class GameAgents
     private final ParallelepipedModel leftWall;
     private final ParallelepipedModel rightWall;
     
-    public GameAgents(BallModel ball, ParallelepipedModel playerBlock, ParallelepipedModel rivalBlock, ParallelepipedModel leftWall, ParallelepipedModel rightWall)
+    private float distanceFromCenter;
+    private float parallelepipedLengthScale;
+    private float zDistance;
+    
+    public CollisionAnalyzer analyzer;
+    
+    public GameAgents()
     {
-        this.ball = ball;
-        this.playerBlock = playerBlock;
-        this.rivalBlock = rivalBlock;
-        this.leftWall = leftWall;
-        this.rightWall = rightWall;
+        distanceFromCenter = 10.0f;
+        parallelepipedLengthScale = 11.0f;
+        zDistance = 16.0f;
+        
+        // should be here!
+        //analyzer = new CollisionAnalyzer();
+        
+        ball = new BallModel(-0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.39f, 0.65f);
+        leftWall = new ParallelepipedModel(-0.5f - distanceFromCenter, 0.5f - distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale, new float[]{1.0f, 0.0f}, (0.5f - distanceFromCenter));
+        rightWall = new ParallelepipedModel(-0.5f + distanceFromCenter, 0.5f + distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale,  new float[]{-1.0f, 0.0f}, (-0.5f + distanceFromCenter));
+        playerBlock = new ParallelepipedModel(-1.5f, 1.5f, zDistance - 0.5f, zDistance + 0.5f, new float[]{0.0f, -1.0f}, (zDistance - 0.5f));
+        rivalBlock = new ParallelepipedModel(-1.5f, 1.5f, -(zDistance + 0.5f), -(zDistance - 0.5f), new float[]{0.0f, 1.0f}, (zDistance - 0.5f));
+    }
+    
+    public float getXDistance()
+    {
+        return distanceFromCenter;
+    }
+    
+    public float getZDistance()
+    {
+        return zDistance;
+    }
+    
+    public float getParallelepipedLengthScale()
+    {
+        return parallelepipedLengthScale;
     }
     
     public BallModel getBall()
