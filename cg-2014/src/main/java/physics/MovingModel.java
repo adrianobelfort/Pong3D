@@ -40,6 +40,20 @@ public class MovingModel
         speed[1] += zIncrement;
     }
     
+    public void incrementAbsSpeed(float Inc)
+    {
+        if(speed[0] > 0) speed[0] += Inc;
+        else speed[0] -= Inc;
+        if(speed[1] > 0) speed[1] += Inc;
+        else speed[1] -= Inc;
+    }
+    
+    public void incrementSpeedPercent(float perc)
+    {
+        speed[0] *= (perc+1.0f);
+        speed[1] *= (perc+1.0f);
+    }
+    
     public void updateSpeed(float xSpeed, float zSpeed)
     {
         speed[0] = xSpeed;

@@ -35,6 +35,14 @@ public abstract class CollideableObject
         this.xdist = (xmax - xmin)/2;
     }
     
+    public void setBoundaries(float[] bounds)
+    {
+       xmin = bounds[0];
+       xmax = bounds[1];
+       zmin = bounds[2];
+       zmax = bounds[3];
+    }
+    
     public float[] getNormal()
     {
         return normal;

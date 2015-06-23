@@ -11,7 +11,7 @@ package physics;
  */
 public class ParallelepipedModel extends CollideableObject 
 {
-    private static float innerBound;
+    private float innerBound;
    
     public ParallelepipedModel(float xmin, float xmax, float zmin, float zmax, float[] normal, float in_bound)
     {

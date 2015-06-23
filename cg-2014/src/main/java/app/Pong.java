@@ -144,12 +144,12 @@ public class Pong extends KeyAdapter implements GLEventListener {
         
         analyzer = new CollisionAnalyzer();
         
-        ballModel = new BallModel(-0.5f, 0.5f, -0.5f, 0.5f, 0.5f, (float) Math.random(), (float) Math.random());
-        leftParallelepipedModel = new ParallelepipedModel(-0.5f - distanceFromCenter, 0.5f - distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale, new float[]{1.0f, 0.0f}, -(0.5f - distanceFromCenter));
-        rightParallelepipedModel = new ParallelepipedModel(-0.5f + distanceFromCenter, 0.5f + distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale,  new float[]{-1.0f, 0.0f}, -(-0.5f + distanceFromCenter));
-        nearParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, zDistance - 0.5f, zDistance + 0.5f, new float[]{0.0f, -1.0f}, -(zDistance - 0.5f));
+        ballModel = new BallModel(-0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.39f, 0.65f);
+        leftParallelepipedModel = new ParallelepipedModel(-0.5f - distanceFromCenter, 0.5f - distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale, new float[]{1.0f, 0.0f}, (0.5f - distanceFromCenter));
+        rightParallelepipedModel = new ParallelepipedModel(-0.5f + distanceFromCenter, 0.5f + distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale,  new float[]{-1.0f, 0.0f}, (-0.5f + distanceFromCenter));
+        nearParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, zDistance - 0.5f, zDistance + 0.5f, new float[]{0.0f, -1.0f}, (zDistance - 0.5f));
         farParallelepipedModel = new ParallelepipedModel(-1.5f, 1.5f, -(zDistance + 0.5f), -(zDistance - 0.5f), new float[]{0.0f, 1.0f}, (zDistance - 0.5f));
-         
+          
         animator = _animator;
         agents = new GameAgents(ballModel, nearParallelepipedModel, farParallelepipedModel, leftParallelepipedModel, rightParallelepipedModel);
         state = new GameState(animator, timer);
@@ -326,17 +326,22 @@ public class Pong extends KeyAdapter implements GLEventListener {
                 switch(e.getKeyCode())
                 {
                     case KeyEvent.VK_LEFT: // Moves to the left
-                        if (nearParallelepipedModel.move(-step, 0))
+                        float[] speed = ballModel.getSpeeds();
+                        float result = -0.75f * (float) Math.sqrt(Math.pow((double)speed[0], 2.0) + Math.pow((double)speed[1], 2.0));
+                
+                        if (nearParallelepipedModel.move(-result, 0))
                         {
-                            multiplayerHandler.sendBlockMove(-step, 0);
+                            multiplayerHandler.sendBlockMove(-result, 0);
                         }
                     break;
 
                     case KeyEvent.VK_RIGHT: // Moves to the right
-
-                        if (nearParallelepipedModel.move(step, 0))
+                        float[] speed2 = ballModel.getSpeeds();
+                        float result2 = -0.75f * (float) Math.sqrt(Math.pow((double)speed2[0], 2.0) + Math.pow((double)speed2[1], 2.0));
+                
+                        if (nearParallelepipedModel.move(result2, 0))
                         {
-                            multiplayerHandler.sendBlockMove(step, 0);
+                            multiplayerHandler.sendBlockMove(result2, 0);
                         }
                     break;
 

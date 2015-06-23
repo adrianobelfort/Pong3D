@@ -74,14 +74,15 @@ public class CollisionAnalyzer
     {
         float bound1[] = obj1.getBoundaries();
         float bound2[] = obj2.getBoundaries();
-        return (bound1[0]+xIn < bound2[1]) && (bound1[1]+xIn > bound2[0]) && (bound1[2]+zIn < bound2[3]) && (bound1[3]+zIn > bound2[2]);
+        
+        if( (bound1[0]+xIn < bound2[1]) && (bound1[1]+xIn > bound2[0]) && (bound1[2]+zIn < bound2[3]) && (bound1[3]+zIn > bound2[2]))
+        {
+             return true;
+        }
+        else return false;
+        
     }
     
-    public static boolean analyzeCollision(BallModel obj1, CollideableObject obj2)
-    {
-        
-        return false;
-    }
     
     public static boolean analyzeCollision(CollideableObject object, float xIncrement, float zIncrement)
     {
@@ -105,7 +106,6 @@ public class CollisionAnalyzer
         {
             if (analyzeCollision((CollideableObject) object, (CollideableObject) worldObject, xIncrement, zIncrement))
             {
-                
                 return worldObject;
             }
         }
