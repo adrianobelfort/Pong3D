@@ -179,7 +179,7 @@ public class CollisionAnalyzer
     }
     
     // verifica colisao do bloco controlado pelo jogador e os blocos laterais
-    public static boolean analyzeCollision(ParallelepipedModel object, float xIncrement, float zIncrement)
+    public static ParallelepipedModel analyzeCollision(ParallelepipedModel object, float xIncrement, float zIncrement)
     {
         float[] objectBoundaries = object.getBoundaries();
         
@@ -199,12 +199,12 @@ public class CollisionAnalyzer
                         objectBoundaries[2] < parallelepipedBoundaries[3] && objectBoundaries[3] > parallelepipedBoundaries[2])
                 {
                     //System.out.println("Collision would happen at " + (object.getX() + xIncrement) + ", " + (object.getZ() + zIncrement));
-                    return true;
+                    return worldObject;
                 }
             }
         }
         
-        return false;
+        return null;
     }
     
     public static ParallelepipedModel analyzeCollisionFromBallWithAnythingExceptObj1(BallModel object, float xIncrement, float zIncrement, ParallelepipedModel Obj1)
