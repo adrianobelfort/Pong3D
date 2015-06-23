@@ -135,13 +135,13 @@ public class BallModel extends CollideableObject
     public boolean move(float timeStep)
     {
         float[] increment = movement.positionIncrement(timeStep);
-        boolean updateSpeed = false;
+        boolean collisionWithPlayerBlock = false;
         
         ParallelepipedModel colidedObj = CollisionAnalyzer.analyzeCollisionFromBallWithAnything(this, increment[0], increment[1]);
         if(colidedObj == null)
         {
             this.updatePosition(increment[0], increment[1]);
-            return true;
+            return false;
         }
         
         // houve colisao com o objeto apontado por colidedObj
@@ -182,7 +182,7 @@ public class BallModel extends CollideableObject
             {
                 step1 = (ballBorders[2] - borders[3]) / Math.abs(speed[1]);
                 Pong.collisionWithWall = false;
-                updateSpeed = true;
+                collisionWithPlayerBlock = true;
                 System.out.println("Aproximacao frontal la atras");
             }
             // se for o plano near
@@ -190,7 +190,7 @@ public class BallModel extends CollideableObject
             {
                 step1 = (ballBorders[3] - borders[2]) / Math.abs(speed[1]); 
                 Pong.collisionWithWall = false;
-                updateSpeed = true;
+                collisionWithPlayerBlock = true;
                 System.out.println("Aproximacao traseira aqui na frente");
             }
 /*
@@ -225,12 +225,11 @@ public class BallModel extends CollideableObject
             // depois, ira executar o proximo movimento em direcao a outra parede
             //step2 = timeStep - step1;
             this.movement.updateSpeed(newspeed[0], newspeed[1]);
-            if (updateSpeed)
+            if (collisionWithPlayerBlock)
                    this.movement.incrementAbsSpeed(0.2f);
             //this.movement.positionIncrement(step2);
             //return true;
-            this.move(0.3f * timeStep, colidedObj);
-            return false;
+            return this.move(0.3f * timeStep, colidedObj) || collisionWithPlayerBlock;
         }   
     }
 
@@ -239,7 +238,12 @@ public class BallModel extends CollideableObject
         
         Pong.collisionWithWall = false;
         ParallelepipedModel colidedObj2 = CollisionAnalyzer.analyzeCollisionFromBallWithAnythingExceptObj1(this, Increment[0], Increment[1], colidedObj1);
-        if (colidedObj2 != null)
+        if (colidedObj2 == null)
+        {
+            this.movement.positionIncrement(step2);   
+            return false;
+        }
+        else
         {
             float[] normal = colidedObj2.getNormal();
             float[] speed = this.movement.getSpeed();
@@ -247,10 +251,9 @@ public class BallModel extends CollideableObject
             // atualiza a velocidade
             // Vout = N . (2N . Vin) - L
             this.movement.updateSpeed((normal[0] * (2*normal[0] * speed[0])) - speed[0], (normal[1] * (2*normal[1] * speed[1])) - speed[1]);
+            this.movement.positionIncrement(step2);
+            return true;
         }
-        this.movement.positionIncrement(step2);
-        
-        return true;
     }
 
     @Override

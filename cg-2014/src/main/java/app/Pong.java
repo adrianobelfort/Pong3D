@@ -577,8 +577,8 @@ public class Pong extends KeyAdapter implements GLEventListener {
         @Override
         public void actionPerformed(ActionEvent ae) 
         {       
-            // se o resultado for faalso, houve colisao
-            if(!ballModel.move(step) && !collisionWithWall)
+            // se o resultado for verdadeiro, houve colisao com os planos controlados pelo usuarios
+            if(ballModel.move(step))
             {
                 float[] speed3 = ballModel.getSpeeds();
                 try {
