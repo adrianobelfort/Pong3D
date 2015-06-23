@@ -5,6 +5,8 @@
  */
 package physics;
 
+import app.Pong;
+
 /**
  *
  * @author Adriano
@@ -21,8 +23,6 @@ public class BallModel extends CollideableObject
         movement = new MovingModel();
         CollisionAnalyzer.addObject(this);
     }
-    
-    public MovingModel getMovement() { return movement; }
     
     public BallModel(float xmin, float xmax, float zmin, float zmax, float radius, float xspeed, float zspeed)
     {
@@ -50,6 +50,37 @@ public class BallModel extends CollideableObject
     public void setSpeed(float xSpeed, float zSpeed)
     {
         movement.updateSpeed(xSpeed, zSpeed);
+    }
+    
+    public void setRandomSpeed()
+    {
+        float xspeed, zspeed, choice;
+        
+        choice = (float) Math.random();
+        xspeed = (float) Math.random();
+        zspeed = (float) Math.random();
+        
+        if (choice < 0.25f)
+        {
+            xspeed = -xspeed;
+            zspeed = -zspeed;
+        }
+        else if (choice >= 0.25f && choice < 0.5f)
+        {
+            // x is the same
+            zspeed = -zspeed;
+        }
+        else if (choice >= 0.5f && choice < 0.75f)
+        {
+            xspeed = -xspeed;
+            // z is the same
+        }
+        else if (choice >= 0.75f)
+        {
+            // both x and z are the same
+        }
+        
+        setSpeed(xspeed, zspeed);
     }
     
     public float[] getSpeeds()
@@ -259,53 +290,6 @@ public class BallModel extends CollideableObject
 
     @Override
     public boolean move(float xIncrement, float zIncrement) {
-        ParallelepipedModel colidedObj = CollisionAnalyzer.analyzeCollisionFromBallWithAnything(this, xIncrement, zIncrement);
-        if(colidedObj == null)
-        {
-            this.updatePosition(xIncrement, zIncrement);
-            return false;
-        }
-        
-        else
-        {
-            float[] speed = this.getSpeeds();
-            // se estiver saindo pelo plano near, cospe a bola pra fora
-            if (speed[1] >= 0) this.updatePosition(0.0f, Math.abs(xIncrement));
-            
-            // se estiver saindo pelo plano far, tbm cospe a bola pra fora
-            else if (speed[1] < 0) this.updatePosition(0.0f, -(Math.abs(xIncrement)));
-            return true;
-        }
-    }
-    
-    public void setRandomSpeed()
-    {
-        float xspeed, zspeed, choice;
-        
-        choice = (float) Math.random();
-        xspeed = (float) Math.random();
-        zspeed = (float) Math.random();
-        
-        if (choice < 0.25f)
-        {
-            xspeed = -xspeed;
-            zspeed = -zspeed;
-        }
-        else if (choice >= 0.25f && choice < 0.5f)
-        {
-            // x is the same
-            zspeed = -zspeed;
-        }
-        else if (choice >= 0.5f && choice < 0.75f)
-        {
-            xspeed = -xspeed;
-            // z is the same
-        }
-        else if (choice >= 0.75f)
-        {
-            // both x and z are the same
-        }
-        
-        setSpeed(xspeed, zspeed);
+        return true;
     }
 }
