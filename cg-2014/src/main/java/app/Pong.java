@@ -634,11 +634,18 @@ public class Pong extends KeyAdapter implements GLEventListener {
     {
         @Override
         public void actionPerformed(ActionEvent ae) 
-        {            
-            while(!ballModel.move(step))
+        {       
+            // se o resultado for faalso, houve colisao
+            if(!ballModel.move(step))
             {
-                // mandar a velocidade e posicao da bola atualizadas   
+                float[] speed3 = ballModel.getSpeeds();
+                try {
+                    multiplayerHandler.sendCollision(ballModel.getX(), ballModel.getZ(), speed3[0], speed3[1]);
+                } catch (IOException ex) {
+                    Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
+            farParallelepipedModel.move(0, 0);
         }   
     }
 }
