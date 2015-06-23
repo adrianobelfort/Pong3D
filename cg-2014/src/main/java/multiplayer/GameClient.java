@@ -732,6 +732,26 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                             running = false;
                             receiveDisconnectFromPlayer();
                             changeAvailability(true);
+                            
+                             new Thread(new Runnable() 
+                            {
+                                @Override
+                                public void run() 
+                                {
+                                    gameState.stopGame();
+                                    try 
+                                    {
+                                        // watch
+                                        disconnectFromServer();
+                                    } 
+                                    catch (IOException ex) 
+                                    {
+                                        //Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                    //frame.dispose(); // or maybe frame.setVisible(false);
+                                    System.exit(0);
+                                }
+                            }).start();
                         break;
                             
                         default:

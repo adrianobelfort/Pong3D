@@ -41,6 +41,8 @@ public class GameAgents
         rightWall = new ParallelepipedModel(-0.5f + distanceFromCenter, 0.5f + distanceFromCenter, -1.5f * parallelepipedLengthScale, 1.5f * parallelepipedLengthScale,  new float[]{-1.0f, 0.0f}, (-0.5f + distanceFromCenter));
         playerBlock = new ParallelepipedModel(-1.5f, 1.5f, zDistance - 0.5f, zDistance + 0.5f, new float[]{0.0f, -1.0f}, (zDistance - 0.5f));
         rivalBlock = new ParallelepipedModel(-1.5f, 1.5f, -(zDistance + 0.5f), -(zDistance - 0.5f), new float[]{0.0f, 1.0f}, (zDistance - 0.5f));
+        playerBlock.bindBall(ball);
+        rivalBlock.bindBall(ball);
     }
     
     public float getXDistance()
