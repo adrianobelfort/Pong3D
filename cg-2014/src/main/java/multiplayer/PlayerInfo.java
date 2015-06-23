@@ -15,7 +15,7 @@ public class PlayerInfo
     public String nickname;
     public String IP;
     public int listeningPort;
-    boolean availability;
+    public boolean availability;
     
     PlayerInfo(String nickname, String IP, int listeningPort, boolean availability)
     {
