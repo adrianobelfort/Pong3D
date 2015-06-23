@@ -135,78 +135,111 @@ public class BallModel extends CollideableObject
     public boolean move(float timeStep)
     {
         float[] increment = movement.positionIncrement(timeStep);
-        boolean collisionWithPlayerBlock = false;
+        boolean updateSpeed = false;
         
         ParallelepipedModel colidedObj = CollisionAnalyzer.analyzeCollisionFromBallWithAnything(this, increment[0], increment[1]);
         if(colidedObj == null)
         {
             this.updatePosition(increment[0], increment[1]);
-            return false;
+            return true;
         }
         
         // houve colisao com o objeto apontado por colidedObj
         else
         {
-            float[] normal = colidedObj.getNormal();
+            float[] normal = colidedObj.getNormal().clone();
             float[] speed = this.movement.getSpeed();
             
-            // atualiza a velocidade
-            // Vout = N . (2N . Vin) - L
-            float[] newspeed = {-((normal[0] * (2*normal[0] * speed[0])) - speed[0]), -((normal[1] * (2*normal[1] * speed[1])) - speed[1])};
-       
-           
-
             // correcao da posicao de colisao
             // primeiro, incrementa a posicao ate encostar na parede
             float[] newIncrement;
             float[] borders = colidedObj.getBoundaries();
             float[] ballBorders = this.getBoundaries();
             float step1;
+            int side = 4;
             step1 = 0.5f * timeStep;
-            // se for o plano direito
+            
+            
+            //System.out.println("Normal antes das verifics: " + normal[0] + " " + normal[1]);
+            
+            // se for o plano esquerdo
             if (normal[0] == 1.0f)
             {
-                step1 = (ballBorders[0] - borders[1]) / Math.abs(speed[0]); 
-                Pong.collisionWithWall = true;
-                System.out.println("Aproximacao lateral na direita");
+                step1 = (ballBorders[0] - borders[1]) / Math.abs(speed[0]);
             }
-            // se for o plano esquerdo
+            // se for o plano direito
             else if(normal[0] == -1.0f)
             {
-                step1 = (ballBorders[1] - borders[0]) / Math.abs(speed[0]); 
-                Pong.collisionWithWall = true;
-                System.out.println("Aproximacao lateral na izquierda");
+                step1 = (ballBorders[1] - borders[0]) / Math.abs(speed[0]);
             }
             //se for o plano far
             else if (normal[1] == 1.0f)
             {
-                step1 = (ballBorders[2] - borders[3]) / Math.abs(speed[1]);
-                Pong.collisionWithWall = false;
-                collisionWithPlayerBlock = true;
-                System.out.println("Aproximacao frontal la atras");
+                // descobrir qual o lado que houve a colisao
+                side = CollisionAnalyzer.analyzeCollisionSide(this, colidedObj, false, increment[0], increment[1]);
+                // se for pela esquerda, atualiza o vetor normal
+                if (side == 1)     
+                {
+                    normal[0] =  1.0f;
+                    normal[1] = 0.0f;
+                    
+                    step1 = (borders[0] - ballBorders[1]) / Math.abs(speed[0]);
+                }
+                //se for pela direita
+                else if(side == 2)
+                {
+                    normal[0] = -1.0f;
+                    normal[1] = 0.0f;
+                    
+                    step1 = (ballBorders[0] - borders[1]) / Math.abs(speed[0]);
+                }
+                else
+                {
+                    step1 = (ballBorders[2] - borders[3]) / Math.abs(speed[1]);
+                }
+                
+                updateSpeed = true;
+                //System.out.println("Aproximacao frontal la atras");
             }
             // se for o plano near
             else if(normal[1] == -1.0f)
             {
-                step1 = (ballBorders[3] - borders[2]) / Math.abs(speed[1]); 
-                Pong.collisionWithWall = false;
-                collisionWithPlayerBlock = true;
-                System.out.println("Aproximacao traseira aqui na frente");
+                System.out.println("Achou o plano near!");
+                // descobrir o lado q houve a colisao
+                side = CollisionAnalyzer.analyzeCollisionSide(this, colidedObj, true, increment[0], increment[1]);
+                
+                // se for pela esquerda, atualiza o vet normal
+                if (side == 1)
+                { 
+                    normal[0] = -1.0f;
+                    normal[1] = 0.0f;
+                    System.out.println("    Esquerda");
+                    step1 = (borders[0] - ballBorders[1]) / Math.abs(speed[0]);
+                }
+                // pela direita
+                else if(side == 2)
+                { 
+                    System.out.println("    Direita");
+                    normal[0] =  1.0f;
+                    normal[1] = 0.0f;
+                    
+                    step1 = (ballBorders[0] - borders[1]) / Math.abs(speed[0]);
+                }
+                else
+                {
+                    step1 = (ballBorders[3] - borders[2]) / Math.abs(speed[1]); 
+                }
+                updateSpeed = true;
+                //System.out.println("Aproximacao traseira aqui na frente");
             }
-/*
-            if (normal[1] != 0.0f)
-            {
-                step1 = ((Math.abs(this.getZ() - colidedObj.getInnerBound()) - this.getRadius()) / Math.abs(speed[1])); 
-                newIncrement = this.movement.positionIncrement(step1); 
-                System.out.println("1ST COLISION: Step" + timeStep + "  Step1 " + step1);
-            }
-            else
-            {
-                step1 = ((Math.abs(this.getX() - colidedObj.getInnerBound()) - this.getRadius()) / Math.abs(speed[0]));
-                newIncrement = this.movement.positionIncrement(step1); 
-                System.out.println("2nd collision Step" + timeStep + "  Step1 " + step1);
-            }*/
             
+            if (side == 0) System.out.println("Aproximacao normal (fronteira ou traseira[ui])");
+            if (side == 1) System.out.println("Aproximacao pela izquierda");
+            if (side == 2) System.out.println("Aproximacao pela derecha");
+            // atualiza a velocidade
+            // Vout = N . (2N . Vin) - L
+            float[] newspeed = {-((normal[0] * (2*normal[0] * speed[0])) - speed[0]), -((normal[1] * (2*normal[1] * speed[1])) - speed[1])};
+       
             newIncrement = this.movement.positionIncrement(step1); 
             float[] bounds = this.getBoundaries();
             float[] objBounds = colidedObj.getBoundaries();
@@ -225,25 +258,23 @@ public class BallModel extends CollideableObject
             // depois, ira executar o proximo movimento em direcao a outra parede
             //step2 = timeStep - step1;
             this.movement.updateSpeed(newspeed[0], newspeed[1]);
-            if (collisionWithPlayerBlock)
+            //>>>>>>>>>>>>>>>>>>>>>> INCREMENTO DA VELOCIDADE
+            //>>>>>>>>>>>>>>>>>>>>>> DESCOMENTAR DEPOIS DA ETAPA DE TESTES
+            /*
+            if (updateSpeed)
                    this.movement.incrementAbsSpeed(0.2f);
+                    */
             //this.movement.positionIncrement(step2);
             //return true;
-            return this.move(0.3f * timeStep, colidedObj) || collisionWithPlayerBlock;
+            this.move(0.2f * timeStep, colidedObj);
+            return false;
         }   
     }
 
     public boolean move(float step2, ParallelepipedModel colidedObj1) {
         float[] Increment = this.movement.positionIncrement(step2);
-        
-        Pong.collisionWithWall = false;
         ParallelepipedModel colidedObj2 = CollisionAnalyzer.analyzeCollisionFromBallWithAnythingExceptObj1(this, Increment[0], Increment[1], colidedObj1);
-        if (colidedObj2 == null)
-        {
-            this.movement.positionIncrement(step2);   
-            return false;
-        }
-        else
+        if (colidedObj2 != null)
         {
             float[] normal = colidedObj2.getNormal();
             float[] speed = this.movement.getSpeed();
@@ -251,9 +282,10 @@ public class BallModel extends CollideableObject
             // atualiza a velocidade
             // Vout = N . (2N . Vin) - L
             this.movement.updateSpeed((normal[0] * (2*normal[0] * speed[0])) - speed[0], (normal[1] * (2*normal[1] * speed[1])) - speed[1]);
-            this.movement.positionIncrement(step2);
-            return true;
         }
+        this.movement.positionIncrement(step2);
+        
+        return true;
     }
 
     @Override

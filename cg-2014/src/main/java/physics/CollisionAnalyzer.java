@@ -83,6 +83,72 @@ public class CollisionAnalyzer
         
     }
     
+    // 1 -> izquierda
+    // 2 -> derecha
+    // 0 -> cima
+    // 0 -> baixo
+    public static int analyzeCollisionSide(BallModel b, ParallelepipedModel p, boolean near, float xInc, float zInc)
+    {
+        float[] bCenter  = {b.getX(), b.getZ()};
+        float[] pBounds = p.getBoundaries();
+        
+        boolean[] bMap = {(bCenter[1] > pBounds[3]), (bCenter[1] > pBounds[2]), (bCenter[0] > pBounds[1]), (bCenter[0] > pBounds[0])};
+        
+        // normal approaches
+        if ((bMap[0] == false) && (bMap[1] == false) && (bMap[2] == false) && (bMap[3] == true))
+            return 0;
+        if ((bMap[0] == true) && (bMap[1] == true) && (bMap[2] == false) && (bMap[3] == true))    
+            return 0;
+        
+        // left side approach
+        if ((bMap[0] == false) && (bMap[1] == true) && (bMap[2] == false) && (bMap[3] == false))
+            return 1;
+        
+        // right side approach
+        if ((bMap[0] == false) && (bMap[1] == true) && (bMap[2] == true) && (bMap[3] == true))
+            return 2;
+        
+        // senao, precisa interpolar =(
+        // t = (pos - bc) / (bf - bc)
+        // t[0,1,2,3] -> [xmin, xmax, zmin, zmax]
+        float[] t = {
+                (pBounds[0] - bCenter[0]) / xInc,
+                (pBounds[1] - bCenter[0]) / xInc,
+                (pBounds[2] - bCenter[1]) / zInc,
+                (pBounds[3] - bCenter[1]) / zInc
+            };
+        
+        // se for o plano near
+        if (near == true)
+        {
+            // aprox frontal
+            if((t[0] < t[2]) || (t[1] < t[2])) return 0;
+            
+            // aprox pela izquierda
+            else if((t[2] < t[0]) && 
+                    (bMap[0] == false) && (bMap[1] == false) && (bMap[2] == false) && (bMap[3] == false))
+                return 1;
+            // aprox pela derecha
+            else if((t[2] < t[1]) &&
+                    (bMap[0] == false) && (bMap[1] == false) && (bMap[2] == true) && (bMap[3] == true))
+                return 2;
+        }
+        // se for o plano far
+        else
+        {
+            // aprox traseira (ui)
+            if((t[0] < t[3]) || (t[1] < t[3])) return 0;
+            // aprox pela izquierda
+            else if((t[3] < t[0]) &&
+                    (bMap[0] == true) && (bMap[1] == true) && (bMap[2] == false) && (bMap[3] == false))
+                return 1;
+            // aprox pela derecha
+            else if((t[3] < t[1]) &&
+                    (bMap[0] == true) && (bMap[1] == true) && (bMap[2] == true) && (bMap[3] == true))
+                return 2;
+        }
+        return 0;
+    }
     
     public static boolean analyzeCollision(CollideableObject object, float xIncrement, float zIncrement)
     {
