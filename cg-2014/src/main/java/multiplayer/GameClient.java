@@ -6,7 +6,6 @@ package multiplayer;
  * and open the template in the editor.
  */
 
-import app.Pong;
 import game.GameAgents;
 import game.GameState;
 import java.io.BufferedInputStream;
@@ -20,7 +19,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Scanner;
 import java.util.TreeMap;
-import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -316,9 +314,6 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                         try
                         {
                             connectToPlayer(rivalIP);
-                            // Added this
-//                            gameState.bind();
-//                            gameState.beginAnimation();
                         }
                         catch (IOException ex)
                         {
@@ -748,7 +743,6 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                                     {
                                         //Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
                                     }
-                                    //frame.dispose(); // or maybe frame.setVisible(false);
                                     System.exit(0);
                                 }
                             }).start();
@@ -761,8 +755,6 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                 catch (SocketException | EOFException aex)
                 {
                     safeToProceed = false;
-                    //System.out.println("An EOF or Socket exception happened. Check the stack:");
-                    //Logger.getLogger(GameClient.class.getName()).log(Level.SEVERE, null, aex);
                 }
                 catch (IOException ex) 
                 {
@@ -783,8 +775,8 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             vx = playerInput.readFloat();
             vz = playerInput.readFloat();
 
-            //System.out.println("\nCollision detected!\n\tBall position: ("+xPosition+ ", " +zPosition+")");
-            //System.out.println("\tSpeed: (" + vx + ", " + vz + ")");
+            System.out.println("\nCollision detected!\n\tBall position: ("+xPosition+ ", " +zPosition+")");
+            System.out.println("\tSpeed: (" + vx + ", " + vz + ")");
             
             gameAgents.getBall().updateAbsolutePosition(-xPosition, -zPosition);
             gameAgents.getBall().setSpeed(-vx, -vz);
@@ -860,7 +852,6 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
             xIncrement = playerInput.readFloat();
             zIncrement = playerInput.readFloat();
             
-            //System.out.println("Rival block is shifted by ("+xIncrement+", "+zIncrement+")");
             gameAgents.getRivalBlock().move(-xIncrement, -zIncrement);
         }
 
@@ -1024,8 +1015,6 @@ public class GameClient implements Runnable, PlayerSendingProtocol, ServerSendin
                 catch (SocketException | EOFException aex)
                 {
                     safeToProceed = false;
-                    //System.out.println("An EOF or Socket exception happened. Check the log:");
-                    //Logger.getLogger(GameClient.class.getName()).log(Level.SEVERE, null, aex);
                 }
                 catch (IOException ex) 
                 {

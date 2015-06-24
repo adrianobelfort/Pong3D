@@ -1,3 +1,16 @@
+/*  UNIVERSIDADE DE SAO PAULO
+    INSTITUTO DE CIENCIAS MATEMATICAS E DE COMPUTACAO
+
+    SCC 0650 - Computacao Grafica (2015) | Engenharia de Computacao
+    Projeto: pongl - uma experiencia 3D
+
+    Professora: Maria Cristina Ferreira de Oliveira
+    Alunos:
+        Adriano Belfort de Sousa 7960706
+        Rodrigo Almeida Bergamo Ferrari 8006421
+        Ilan Galvao Sales Figueiredo 7656321
+*/
+
 
 package app;
 
@@ -83,11 +96,10 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
     public GameAgents agents;
     public GameState state;
     public AnimatorBase animator;
-//    public CollisionAnalyzer analyzer;
     public GameClient multiplayerHandler;
     
     public GLCanvas glCanvas;
-    public static Pong painter;
+    private static Pong painter;
     private Frame frame;
     
     public static void main(String[] args) throws InterruptedException
@@ -103,88 +115,14 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
         Thread multiplayerThread = new Thread(newMultiplayerHandler);
         multiplayerThread.start();
         
-        //Pong listener = new Pong(newAgents, newState, newMultiplayerHandler);
         painter = new Pong(newAgents, newState, newMultiplayerHandler);
-        //newState.bindPainter(listener);
-        
         new Thread(painter).start();
     }
     
     @Override
     public void run() 
     {
-//        // Get GL3 profile (to work with OpenGL 4.0)
-//        GLProfile profile = GLProfile.get(GLProfile.GL3);
-//
-//        // Configurations
-//        GLCapabilities glcaps = new GLCapabilities(profile);
-//        glcaps.setDoubleBuffered(true);
-//        glcaps.setHardwareAccelerated(true);
-//
-//        // Create canvas -- gui does that!
-//        glCanvas = new GLCanvas(glcaps);
-//        
-//        // Add listener to panel
-//        animator = new FPSAnimator(glCanvas, 60);
-//        //final Pong listener = new Pong(serverIP, animator);
-//        glCanvas.addGLEventListener(painter);
-//        
-//        state.bindPainter(painter);
-//        
-//        Frame frame = new Frame("pongl: a 3D experience");
-//        frame.setSize(800, 800);
-//        frame.add(glCanvas);
-//        frame.addKeyListener(painter);
-//
-//        frame.addWindowListener(new WindowAdapter() 
-//        {
-//            @Override
-//            public void windowClosing(WindowEvent e) 
-//            {
-//                new Thread(new Runnable() 
-//                {
-//                    @Override
-//                    public void run() 
-//                    {
-//                        state.stopGame();
-//                        try 
-//                        {
-//                            if (multiplayerHandler != null) 
-//                            {
-//                                multiplayerHandler.disconnectFromPlayer();
-//                                multiplayerHandler.disconnectFromServer();
-//                            }
-//                        } 
-//                        catch (IOException ex) 
-//                        {
-//                            //Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
-//                        }
-//                        //frame.dispose(); // or maybe frame.setVisible(false);
-//                        System.exit(0);
-//                    }
-//                }).start();
-//            }
-//
-//        });
-//        
-//        frame.setVisible(true);
-//        state.beginAnimation();
-        
-        //animator.start();
-        //timer.start();
-        //state.beginAnimation();
     }
-    
-//    private void printParameters()
-//    {
-//        System.out.println("Current distances:");
-//        System.out.println("\tFrom center: " + distanceFromCenter + " horizontal scalar factor: " + parallelepipedLengthScale);
-//        System.out.println("\tParallelepiped mutual z-distance: " + zDistance);
-//        System.out.println("Camera settings:");
-//        System.out.println("\tZ-distance from origin: " + cameraDistance + " camera height: " + cameraHeight);
-//        System.out.println("Positions:");
-//        System.out.println("\tUpper parallelepiped: " + nearParallelepipedDisplacement + " bottom parallelepiped: " + farParallelepipedDisplacement + "\n");
-//    }
     
     public Pong(GameAgents agents, final GameState state, GameClient multiplayerClientHandler) 
     {
@@ -229,35 +167,6 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
         
         this.state = state;
         this.multiplayerHandler = multiplayerClientHandler;
-        
-        //analyzer = new CollisionAnalyzer();
-        
-        // QUEM DEVE FAZER ISSO EH A INTERFACE!!!! watch
-        //animator = _animator;
-        //agents = new GameAgents();
-        
-//        // Get GL3 profile (to work with OpenGL 4.0)
-//        GLProfile profile = GLProfile.get(GLProfile.GL3);
-//
-//        // Configurations
-//        GLCapabilities glcaps = new GLCapabilities(profile);
-//        glcaps.setDoubleBuffered(true);
-//        glcaps.setHardwareAccelerated(true);
-//
-//        // Create canvas -- gui does that!
-//        glCanvas = new GLCanvas(glcaps);
-//        
-//        // Add listener to panel
-//        animator = new FPSAnimator(glCanvas, 60);
-//        //final Pong listener = new Pong(serverIP, animator);
-//        glCanvas.addGLEventListener(this);
-//        
-//        state.bindPainter(this);
-        
-        // watch
-        //multiplayerHandler = new GameClient(serverIP, agents, state);
-        //multiplayerThread = new Thread(multiplayerHandler);
-        //multiplayerThread.start();
         
         // Get GL3 profile (to work with OpenGL 4.0)
         GLProfile profile = GLProfile.get(GLProfile.GL3);
@@ -514,30 +423,6 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
                         rotationParameterY += step;
                     break;
 
-//                    case KeyEvent.VK_Y:
-//                        distanceFromCenter += 2.0f * step;
-//                    break;
-//
-//                    case KeyEvent.VK_H:
-//                        distanceFromCenter -= 2.0f * step;
-//                    break;
-//
-//                    case KeyEvent.VK_T:
-//                        parallelepipedLengthScale += step;
-//                    break;
-//
-//                    case KeyEvent.VK_G:
-//                        parallelepipedLengthScale -= step;
-//                    break;
-//
-//                    case KeyEvent.VK_B:
-//                        zDistance -= step;
-//                    break;
-//
-//                    case KeyEvent.VK_N:
-//                        zDistance += step;
-//                    break;
-
                     case KeyEvent.VK_X:
                         if (cameraDistance <= 2.0f * step)
                         {
@@ -583,13 +468,8 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
                 }
 
                 nearParallelepipedDisplacement = nearParallelepipedModel.getX();
-                //farParallelepipedDisplacement = farParallelepipedModel.getX();
             }
 
-            // TODO: CONTINUE HERE!!! PAUSE GAME
-
-            // Switch for pause game features -- forget it (for now hehe)
-            // This switch will be evaluated all the time, regardless of animation
             switch(e.getKeyCode())
             {
                 case KeyEvent.VK_1:
@@ -624,27 +504,12 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
                 break;
                     
                 case KeyEvent.VK_S:
-                    //if (state.isBound() && multiplayerHandler.whoStarts())
-                    //{
                         System.out.println("Game should start now");
                         ballModel.updateAbsolutePosition(0, 0);
                         ballModel.setRandomSpeed();
                         // Multiplayer code
                         multiplayerHandler.sendGameStart(ballModel.getSpeeds());
-                        // End of multiplayer code
-                        //state.startGame();
-                   // }
-                   /* else
-                    {
-                        if (!state.isBound())
-                        {
-                            System.out.println("You are not connected to another player");
-                        }
-                        if (!multiplayerHandler.whoStarts())
-                        {
-                            System.out.println(multiplayerHandler.getRivalNickname() + " is the one who starts the game");
-                        }
-                    }*/
+                        
                 break;
                     
                 case KeyEvent.VK_ESCAPE:
@@ -655,7 +520,6 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
                 break;
             }
 
-            //printParameters();
         }
         catch(IOException ex)
         {
@@ -680,7 +544,6 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
         public void actionPerformed(ActionEvent ae) 
         {       
             float[] speed3 = ballModel.getSpeeds();
-            //System.out.println("Speeds: (x) " + speed3[0] + " (z) " + speed3[1]);
             // se o resultado for verdadeiro, houve colisao com os planos controlados pelo usuarios
             if(ballModel.move(step))
             {

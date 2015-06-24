@@ -99,34 +99,9 @@ public class GameServer implements Runnable, NetworkingConstants, ServerReceivin
         short opcode;
         
         runningClients++;
-        
-        //String receivedMessage = "";
-        
+                
         System.out.println("Handling client at " + clientSocket.getInetAddress().getHostAddress() + " at port " + clientSocket.getPort());
-        
-        /*try 
-        {
-            // First, the server will receive the nickname of the player
-            // and register to its player table
-            while(!registerNickname())
-            {
-                notifyInvalidNickname();
-                notifyAcceptedNickname();
-            }
-        } 
-        catch (IOException ex) 
-        {
-            System.out.println("Could not register player due to an exception");
-            try { clientSocket.close(); } catch (IOException ex1) { System.out.println("Exception on socket closing");}
-            //System.exit(2);
-            return;
-        }*/
-        
-        // Echo mode
-        /*receivedMessage = input.readUTF();
-        System.out.println("\n[Message from client " + clientSocket.getInetAddress().getHostAddress() + "] " + receivedMessage);
-        output.writeUTF(receivedMessage);
-        output.flush();*/
+
         while(threadRunning && safeToProceed)
         {
             try 
@@ -211,7 +186,6 @@ public class GameServer implements Runnable, NetworkingConstants, ServerReceivin
             if (player != null)
             {
                 player.changeAvailability(newAvailability);
-                //players.replace(playerNickname, player);
                 players.put(playerNickname, player);    // In compliance with older versions of Java
                 printPlayersList();
             }
@@ -228,7 +202,6 @@ public class GameServer implements Runnable, NetworkingConstants, ServerReceivin
         
         synchronized(players)
         {
-            //if (players.putIfAbsent(chosenNickname, tentativeNewPlayer) != null)
             if (players.containsKey(chosenNickname))
             {
                 return false;
