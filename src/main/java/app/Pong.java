@@ -116,9 +116,7 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
         Thread multiplayerThread = new Thread(newMultiplayerHandler);
         multiplayerThread.start();
         
-        //Pong listener = new Pong(newAgents, newState, newMultiplayerHandler);
         painter = new Pong(newAgents, newState, newMultiplayerHandler);
-        //newState.bindPainter(listener);
         
         new Thread(painter).start();
     }
@@ -218,7 +216,6 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
                         {
                             //Logger.getLogger(Pong.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        //frame.setVisible(false);
                         System.exit(0);
                     }
                 }).start();
@@ -227,7 +224,6 @@ public class Pong extends KeyAdapter implements GLEventListener, Runnable
         });
         
         frame.setVisible(true);
-//        state.beginAnimation();
     }
 
     @Override
